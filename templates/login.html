@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <fb:login-button autologoutlink="true"></fb:login-button>
+    {% if user.is_authenticated %}
+      <p><a href="{{ user.profile_url }}"><img src="http://graph.facebook.com/{{ user.username }}/picture?type=square"/></a></p>
+      <p>Hello, {{ user.first_name|escape }} {{ user.last_name|escape }}</p>
+    {% endif %}
+    <div id="fb-root"></div>
+    <p>{{vids|safe}}</p>
+{# <object width="400" height="300" ><param name="allowfullscreen" value="true" /><param name="allowscriptaccess" value="always" /><param name="movie" value="http://www.facebook.com/v/461480370238" /><embed src="http://www.facebook.com/v/461480370238" type="application/x-shockwave-flash" allowscriptaccess="always" allowfullscreen="true" width="400" height="300"></embed></object> #}
+{% endblock %}
+
+{% block js %}
+    <script>
+      window.fbAsyncInit = function() {
+        FB.init({
+            appId: '{{ settings.FACEBOOK_APP_ID }}',
+            status: true,
+            cookie: true,
+            xfbml: true
+        });
+        FB.Event.subscribe('{% if user.is_authenticated %}{% url django.contrib.auth.views.logout %}{% else %}{% url facebook.views.login %}{% endif %}', function(response) {
+            FB.login(function(response) {
+              if (response.session) {
+                if (response.perms) {
+                  // user is logged in and granted some permissions.
+                  // perms is a comma separated list of granted permissions
+                } else {
+                  // user is logged in, but did not grant any permissions
+                }
+              } else {
+                // user is not logged in
+              }
+            }, {perms:'read_stream,user_videos'});
+          window.location.reload();
+        });
+      };
+      (function() {
+        var e = document.createElement('script');
+        e.type = 'text/javascript';
+        e.src = document.location.protocol + '//connect.facebook.net/en_US/all.js';
+        e.async = true;
+        document.getElementById('fb-root').appendChild(e);
+      }());
+    </script>
+{% endblock %}
