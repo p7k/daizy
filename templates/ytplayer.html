@@ -8,6 +8,7 @@
 
 {% block content %}
 <div style='float:right'>
+    <div id='loading'><img src='/statics/img/spinner_flower.gif'> Loading your vids ...</div>
     <div><label for="from">From:</label><input type="text" name="from" value="" id="from"></div>
     <div><label for="date">Date:</label><input type="text" name="date" value="" id="date"></div>
 </div>
@@ -17,8 +18,8 @@
     </div>
     <div>
         <a href="javascript:previous()">Back</a>
-        <a href="javascript:ytplayer.Play()">Play</a>
-        <a href="javascript:ytplayer.Pause()">Pause</a>
+        <a href="javascript:ytplayer.playVideo()">Play</a>
+        <a href="javascript:ytplayer.pauseVideo()">Pause</a>
         <a href="javascript:next()">Next</a>
     </div>
     <div>
@@ -61,9 +62,10 @@
 
          ytplayer.addEventListener('onStateChange', 'onStateChangeListener');
 
-         $.getJSON('/youtubes/', function(data) {
+         $.getJSON('{% url facebook.views.youtube_vids %}', function(data) {
              playlist.load(data);
              ytplayer.cueVideoById(playlist.id());
+             $('#loading').hide();
          });
      }
 
