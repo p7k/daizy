@@ -11,6 +11,7 @@
     {% block css %}
     {% endblock %}
 
+    <script type="text/javascript" src="/statics/js/jquery-1.4.2.min.js"></script>
     {% block preload_js %}
     {% endblock %}
 
@@ -19,7 +20,8 @@
 
   <body>
     <div id="header">
-      <a id="logo" href="/">Daisy</a>
+      <a id="logo" href="/"><img src='/statics/img/daisy.jpg' height='30' width='30' border='0'/>Daisy</a>
+      <hr/>
     </div>
 
     <div class="columns">
@@ -44,6 +46,8 @@
     </div>
 
     <div id="footer">
+        <hr/>
+        © 2010 - Pavel Katsev (project Daisy)
       {# <p>Powered by <a href="http://www.allbuttonspressed.com/projects/django-nonrel">Django-nonrel</a></p> #}
     </div>
 

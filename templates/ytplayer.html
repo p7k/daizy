@@ -1,11 +1,91 @@
 {% extends "base.html" %}
 
 
+{% block preload_js %}
+<script type="text/javascript" src="/statics/js/swfobject.js"></script>
+{% endblock %}
+
+
 {% block content %}
-    <p>hello world</p>
+<div style='float:right'>
+    <div><label for="from">From:</label><input type="text" name="from" value="" id="from"></div>
+    <div><label for="date">Date:</label><input type="text" name="date" value="" id="date"></div>
+</div>
+<div>
+    <div id="ytapiplayer">
+        You need Flash player 8+ and JavaScript enabled to view this video.
+    </div>
+    <div>
+        <a href="javascript:previous()">Back</a>
+        <a href="javascript:ytplayer.Play()">Play</a>
+        <a href="javascript:ytplayer.Pause()">Pause</a>
+        <a href="javascript:next()">Next</a>
+    </div>
+    <div>
+        <label for='duration'>Duration:</label>
+        <input id='duration' value='0:00' type="text">
+    </div>
+</div>
 {% endblock %}
 
 
 {% block js %}
+<script type="text/javascript">
+    var atts = { id: "myytplayer" };
+    var params = { allowScriptAccess: "always" };
+    var duration_el = $('#duration');
+    var from_el = $('#from');
+    var date_el = $('#date');
 
+    // parses id from a full youtube url
+    function parseId (url) { return url.replace(/^[^v]+v.(.{11}).*/,"$1"); }
+
+    // playlist :: vid id provider
+    var playlist = new function () {
+        this.pos = 0;
+        this.posts = {};
+        this.load = function (data) { this.posts = data; };
+        this.fw = function () { if (this.pos < this.posts.length-1) { this.pos++; } };
+        this.rw = function () { if (this.pos > 0 ) { this.pos--; } };
+        this.id = function () {
+            var post = this.posts[this.pos];
+            from_el.val(post.from.name);
+            date_el.val(post.created_time);
+            return parseId(post.link); 
+        };
+    };
+
+     // gets called once the player is loaded and ready
+     function onYouTubePlayerReady (playerId) {
+         ytplayer = document.getElementById(atts.id);
+
+         ytplayer.addEventListener('onStateChange', 'onStateChangeListener');
+
+         $.getJSON('/youtubes/', function(data) {
+             playlist.load(data);
+             ytplayer.cueVideoById(playlist.id());
+         });
+     }
+
+    function onStateChangeListener (newState) {
+        switch(newState) {
+            // ended
+            case 0:
+                playlist.fw(); 
+                ytplayer.loadVideoById(playlist.id());
+                break;
+            // cued
+            case 5:
+                if (ytplayer && ytplayer.getDuration) {
+                    duration_el.val(ytplayer.getDuration());
+                };
+        };
+    }
+
+    function next () { playlist.fw(); ytplayer.loadVideoById(playlist.id()); }
+    function previous () { playlist.rw(); ytplayer.loadVideoById(playlist.id()); }
+
+    swfobject.embedSWF("http://www.youtube.com/apiplayer?&enablejsapi=1&playerapiid=ytapiplayer",
+                     "ytapiplayer", "480", "295", "8", null, null, params, atts);
+</script>
 {% endblock %}
