@@ -5,30 +5,47 @@
 <script type="text/javascript" src="/statics/js/swfobject.js"></script>
 {% endblock %}
 
-
-{% block content %}
-<div style='float:right'>
-    <div id='loading'><img src='/statics/img/spinner_flower.gif'> Loading your vids ...</div>
-    <div><label for="from">From:</label><input type="text" name="from" value="" id="from"></div>
-    <div><label for="date">Date:</label><input type="text" name="date" value="" id="date"></div>
-</div>
-<div>
-    <div id="ytapiplayer">
-        You need Flash player 8+ and JavaScript enabled to view this video.
+{% block content-header %}
+    <div class="clear"></div>
+    <div class="grid_12">
+    	<h2 id="page-heading">YouTube Channel</h2>
     </div>
-    <div>
-        <a href="javascript:previous()">Back</a>
-        <a href="javascript:ytplayer.playVideo()">Play</a>
-        <a href="javascript:ytplayer.pauseVideo()">Pause</a>
-        <a href="javascript:next()">Next</a>
-    </div>
-    <div>
-        <label for='duration'>Duration:</label>
-        <input id='duration' value='0:00' type="text">
-    </div>
-</div>
 {% endblock %}
 
+{% block content %}
+    	<div class="clear"></div>
+		<div class="grid_8">
+			<div class="box">
+				<h2>
+					<a href="#" id="toggle-paragraphs">Your video posts</a>
+				</h2>
+				<div class="block" id="paragraphs">
+                    <div>
+                        <div id='loading'><img src='/statics/img/ajax-loader.gif'> Loading your vids ...</div>
+                        <form>
+                            <label for="from">From:</label><input type="text" name="from" value="" id="from">
+                            <label for="date">Date:</label><input type="text" name="date" value="" id="date">
+                        </form>
+                    </div>
+                    <div>
+                        <div id="ytapiplayer">
+                            You need Flash player 8+ and JavaScript enabled to view this video.
+                        </div>
+                        <div>
+                            <a href="javascript:previous()">Back</a>
+                            <a href="javascript:ytplayer.playVideo()">Play</a>
+                            <a href="javascript:ytplayer.pauseVideo()">Pause</a>
+                            <a href="javascript:next()">Next</a>
+                        </div>
+                        {# <div> #}
+                        {#     <label for='duration'>Duration:</label> #}
+                        {#     <input id='duration' value='0:00' type="text"> #}
+                        {# </div> #}
+                    </div>
+				</div>
+			</div>
+		</div>
+{% endblock %}
 
 {% block js %}
 <script type="text/javascript">

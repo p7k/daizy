@@ -58,7 +58,7 @@ def login(request):
         auth.logout(request)
 
     template_context = {'settings': settings, 'error': error, 'vids': vid_list}
-    return render_to_response('login.html', template_context, context_instance=RequestContext(request))
+    return render_to_response('index.html', template_context, context_instance=RequestContext(request))
 
 @login_required
 def youtube_vids(request):

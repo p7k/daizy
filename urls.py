@@ -9,6 +9,9 @@ urlpatterns = patterns('',
 
     # for andrey
     (r'^player/$', 'django.views.generic.simple.direct_to_template', {'template': 'ytplayer.html'}),
+
+    # 960
+    (r'^index/$', 'django.views.generic.simple.direct_to_template', {'template': 'index.html'}),
     
     # media
     (r'^statics/(?P<path>.*)$', 'django.views.static.serve', {'document_root': settings.MEDIA_ROOT}),
