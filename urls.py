@@ -14,5 +14,5 @@ urlpatterns = patterns('',
     (r'^index/$', 'django.views.generic.simple.direct_to_template', {'template': 'index.html'}),
     
     # media
-    (r'^statics/(?P<path>.*)$', 'django.views.static.serve', {'document_root': settings.MEDIA_ROOT}),
+    (r'^static/(?P<path>.*)$', 'django.views.static.serve', {'document_root': settings.MEDIA_ROOT}),
 )

@@ -6,22 +6,22 @@
 	<head>
 		<meta http-equiv="content-type" content="text/html; charset=utf-8" />
 		<title>{% block title %}{% endblock %} - daisy</title>
-		<link rel="stylesheet" type="text/css" href="/statics/css/reset.css" media="screen" />
-		<link rel="stylesheet" type="text/css" href="/statics/css/text.css" media="screen" />
-		<link rel="stylesheet" type="text/css" href="/statics/css/960.css" media="screen" />
-		<link rel="stylesheet" type="text/css" href="/statics/css/layout.css" media="screen" />
-		<link rel="stylesheet" type="text/css" href="/statics/css/nav.css" media="screen" />
+		<link rel="stylesheet" type="text/css" href="{{ MEDIA_URL }}/css/reset.css" media="screen" />
+		<link rel="stylesheet" type="text/css" href="{{ MEDIA_URL }}/css/text.css" media="screen" />
+		<link rel="stylesheet" type="text/css" href="{{ MEDIA_URL }}/css/960.css" media="screen" />
+		<link rel="stylesheet" type="text/css" href="{{ MEDIA_URL }}/css/layout.css" media="screen" />
+		<link rel="stylesheet" type="text/css" href="{{ MEDIA_URL }}/css/nav.css" media="screen" />
 		{% block css %}{% endblock %}
 		<!--[if IE 6]><link rel="stylesheet" type="text/css" href="../../../css/ie6.css" media="screen" /><![endif]-->
 		<!--[if IE 7]><link rel="stylesheet" type="text/css" href="../../../css/ie.css" media="screen" /><![endif]-->
-		<script type="text/javascript" src="/statics/js/jquery-1.4.2.min.js"></script>
+		<script type="text/javascript" src="{{ MEDIA_URL }}/js/jquery-1.4.2.min.js"></script>
         {% block preload_js %}{% endblock %}
 	</head>
 	<body>
 		<div class="container_12">
 			<div class="grid_12">
 				<h1 id="branding">
-					<a href="/"><img src='/statics/img/daisy.svg' height='50' width='40' border='0'/> Daisy</a>
+					<a href="/">Daisy</a>
 				</h1>
 			</div>
 			<div class="clear"></div>
@@ -101,8 +101,8 @@
 							</h3>
 							<h4>A Hot Debutant</h4>
 							<p class="meta">Moscow, Russia — Friday, 1 October 2010</p>
-							<a href="#" class="image">
-								<img src="/statics/img/pres_shot.png" width="60" height="60" alt="photo" />
+							<a href="{{ MEDIA_URL }}/img/pres_shot.jpg" class="image">
+								<img src="{{ MEDIA_URL }}/img/pres_shot.jpg" width="60" height="60" alt="photo" />
 							</a>
 							<p>Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat. Ut wisi enim ad minim veniam, quis nostrud exerci tation ullamcorper suscipit lobortis nisl ut aliquip ex ea commodo consequat. <a href="#">Visit site.</a></p>
 						</div>
@@ -120,14 +120,13 @@
 			<div class="clear"></div>
 		</div>
 		
-		<script type="text/javascript" src="/statics/js/jquery-ui.js"></script>
-		<script type="text/javascript" src="/statics/js/jquery-fluid16.js"></script>
-		<script type="text/javascript" src="/statics/js/fbsdk.js"></script>
+		<script type="text/javascript" src="{{ MEDIA_URL }}/js/jquery-ui.js"></script>
+		<script type="text/javascript" src="{{ MEDIA_URL }}/js/jquery-fluid16.js"></script>
+		<script type="text/javascript" src="{{ MEDIA_URL }}/js/fbsdk.js"></script>
 		<script>
           window.fbAsyncInit = function() {
             FB.init({
-                // appId: '{{ settings.FACEBOOK_APP_ID }}',
-                appId: '143155229062210',
+                appId: '{{ FACEBOOK_APP_ID }}',
                 status: true,
                 cookie: true,
                 xfbml: true

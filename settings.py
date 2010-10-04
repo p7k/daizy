@@ -37,14 +37,28 @@ try:
 except ImportError:
     pass
 
-# Facebook GraphAPI integration
-FACEBOOK_APP_ID = '143155229062210'
-FACEBOOK_API_KEY = 'b8887dfe5ade767643db465d9d6aaae1'
-FACEBOOK_APP_SECRET = 'a6371309726429fabc5bb7a469644b22'
-FACEBOOK_API_SECRET = FACEBOOK_APP_SECRET
+#################################################################
+#########################  MY SETTINGS  #########################
+#################################################################
+if has_djangoappengine:
+    from djangoappengine.utils import on_production_server
+else:
+    on_production_server = False
 
-FACEBOOK_REDIRECT_URI = 'http://localhost:8000/'
-INSTALLED_APPS = ('facebook',)
-AUTHENTICATION_BACKENDS = (
-    'facebook.backends.FacebookBackend',
-)
+# Media
+TEMPLATE_CONTEXT_PROCESSORS = ('django.core.context_processors.media',)
+MEDIA_URL = '/static/'
+
+# Facebook
+INSTALLED_APPS += ('facebook',)
+AUTHENTICATION_BACKENDS = ('facebook.backends.FacebookBackend',)
+TEMPLATE_CONTEXT_PROCESSORS += ('facebook.context_processors.facebook_app_id',)
+
+if on_production_server:
+    FACEBOOK_APP_ID = '143155229062210'
+    FACEBOOK_API_KEY = 'b8887dfe5ade767643db465d9d6aaae1'
+    FACEBOOK_APP_SECRET = 'a6371309726429fabc5bb7a469644b22'
+else:
+    FACEBOOK_APP_ID = '113435098718000'
+    FACEBOOK_API_KEY = '852482d9db128f355cc891748300642b'
+    FACEBOOK_APP_SECRET = '50e2c8bc51fcc45926ba84c772b4ef43'
