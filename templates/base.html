@@ -6,15 +6,15 @@
 	<head>
 		<meta http-equiv="content-type" content="text/html; charset=utf-8" />
 		<title>{% block title %}{% endblock %} - daisy</title>
-		<link rel="stylesheet" type="text/css" href="{{ MEDIA_URL }}/css/reset.css" media="screen" />
-		<link rel="stylesheet" type="text/css" href="{{ MEDIA_URL }}/css/text.css" media="screen" />
-		<link rel="stylesheet" type="text/css" href="{{ MEDIA_URL }}/css/960.css" media="screen" />
-		<link rel="stylesheet" type="text/css" href="{{ MEDIA_URL }}/css/layout.css" media="screen" />
-		<link rel="stylesheet" type="text/css" href="{{ MEDIA_URL }}/css/nav.css" media="screen" />
+		<link rel="stylesheet" type="text/css" href="{{ MEDIA_URL }}css/reset.css" media="screen" />
+		<link rel="stylesheet" type="text/css" href="{{ MEDIA_URL }}css/text.css" media="screen" />
+		<link rel="stylesheet" type="text/css" href="{{ MEDIA_URL }}css/960.css" media="screen" />
+		<link rel="stylesheet" type="text/css" href="{{ MEDIA_URL }}css/layout.css" media="screen" />
+		<link rel="stylesheet" type="text/css" href="{{ MEDIA_URL }}css/nav.css" media="screen" />
 		{% block css %}{% endblock %}
 		<!--[if IE 6]><link rel="stylesheet" type="text/css" href="../../../css/ie6.css" media="screen" /><![endif]-->
 		<!--[if IE 7]><link rel="stylesheet" type="text/css" href="../../../css/ie.css" media="screen" /><![endif]-->
-		<script type="text/javascript" src="{{ MEDIA_URL }}/js/jquery-1.4.2.min.js"></script>
+		<script type="text/javascript" src="{{ MEDIA_URL }}js/jquery-1.4.2.min.js"></script>
         {% block preload_js %}{% endblock %}
 	</head>
 	<body>
@@ -101,8 +101,8 @@
 							</h3>
 							<h4>A Hot Debutant</h4>
 							<p class="meta">Moscow, Russia — Friday, 1 October 2010</p>
-							<a href="{{ MEDIA_URL }}/img/pres_shot.jpg" class="image">
-								<img src="{{ MEDIA_URL }}/img/pres_shot.jpg" width="60" height="60" alt="photo" />
+							<a href="{{ MEDIA_URL }}img/pres_shot.jpg" class="image">
+								<img src="{{ MEDIA_URL }}img/pres_shot.jpg" width="60" height="60" alt="photo" />
 							</a>
 							<p>Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat. Ut wisi enim ad minim veniam, quis nostrud exerci tation ullamcorper suscipit lobortis nisl ut aliquip ex ea commodo consequat. <a href="#">Visit site.</a></p>
 						</div>
@@ -120,9 +120,9 @@
 			<div class="clear"></div>
 		</div>
 		
-		<script type="text/javascript" src="{{ MEDIA_URL }}/js/jquery-ui.js"></script>
-		<script type="text/javascript" src="{{ MEDIA_URL }}/js/jquery-fluid16.js"></script>
-		<script type="text/javascript" src="{{ MEDIA_URL }}/js/fbsdk.js"></script>
+		<script type="text/javascript" src="{{ MEDIA_URL }}js/jquery-ui.js"></script>
+		<script type="text/javascript" src="{{ MEDIA_URL }}js/jquery-fluid16.js"></script>
+		<script type="text/javascript" src="{{ MEDIA_URL }}js/fbsdk.js"></script>
 		<script>
           window.fbAsyncInit = function() {
             FB.init({
@@ -143,7 +143,7 @@
                   } else {
                     // user is not logged in
                   }
-                }, {perms:'read_stream,user_videos'});
+                }, {perms:'read_stream'});
               window.location.reload();
             });
             FB.Event.subscribe('auth.logout', function(response) {

@@ -45,15 +45,19 @@ if has_djangoappengine:
 else:
     on_production_server = False
 
+TEMPLATE_CONTEXT_PROCESSORS = ('django.contrib.auth.context_processors.auth',)
+
+# Admin
+INSTALLED_APPS += ('django.contrib.admin',)
+
 # Media
-TEMPLATE_CONTEXT_PROCESSORS = ('django.core.context_processors.media',)
 MEDIA_URL = '/static/'
+TEMPLATE_CONTEXT_PROCESSORS += ('django.core.context_processors.media',)
 
 # Facebook
 INSTALLED_APPS += ('facebook',)
-AUTHENTICATION_BACKENDS = ('facebook.backends.FacebookBackend',)
+# AUTHENTICATION_BACKENDS = ('facebook.backends.FacebookBackend',)
 TEMPLATE_CONTEXT_PROCESSORS += ('facebook.context_processors.facebook_app_id',)
-
 if on_production_server:
     FACEBOOK_APP_ID = '143155229062210'
     FACEBOOK_API_KEY = 'b8887dfe5ade767643db465d9d6aaae1'
@@ -62,3 +66,11 @@ else:
     FACEBOOK_APP_ID = '113435098718000'
     FACEBOOK_API_KEY = '852482d9db128f355cc891748300642b'
     FACEBOOK_APP_SECRET = '50e2c8bc51fcc45926ba84c772b4ef43'
+
+# Registration
+INSTALLED_APPS += ('django.contrib.sites','registration',)
+# ACCOUNT_ACTIVATION_DAYS = 7 # One-week activation window;
+
+# Users
+# INSTALLED_APPS += ('users',)
+AUTH_PROFILE_MODULE = 'registration.RegistrationProfile'

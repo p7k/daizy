@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block content %}
+<div class="clear"></div>
+<div class="grid_8">
+    <div class="box">
+    	<h2>
+    		<a href="#" id="toggle-forms">Forms</a>
+    	</h2>
+    	<div class="block" id="forms">
+            <form method="post" action=".">
+    			<fieldset>
+                    {{ form.as_p }}
+                    <input type="submit" value="{% trans 'Submit' %}" />
+    			</fieldset>
+                {% csrf_token %}
+    		</form>
+    	</div>
+    </div>
+</div>
+{% endblock %}

@@ -36,7 +36,7 @@ def login(request):
 
         # haxor into here
         # graph = fb.GraphAPI(access_token)
-        # # import ipdb; ipdb.set_trace()
+        # import ipdb; ipdb.set_trace()
         # home_feed = graph.get_connections('me', 'home', type='video', limit=100)
         # vids = (post for post in home_feed['data'] if post['type'] == 'video')
         # html_unit = "<div><p>From: %(from)s</p><p>Link: %(link)s</p><p>Date: %(created_time)s</p></div>"
@@ -57,7 +57,7 @@ def login(request):
     else:
         auth.logout(request)
 
-    template_context = {'settings': settings, 'error': error, 'vids': vid_list}
+    template_context = {'error': error, 'vids': vid_list}
     return render_to_response('index.html', template_context, context_instance=RequestContext(request))
 
 @login_required
@@ -72,7 +72,6 @@ def youtube_vids(request):
         home_feed = graph.get_connections('me', 'home', type='video', limit=50)
         vids = (post for post in home_feed['data'] if post['type'] == 'video' and 'youtube.com' in post['link'])
         return HttpResponse(_write_json(list(vids)))
-
     return HttpResponseServerError()
 
 
