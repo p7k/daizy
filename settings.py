@@ -51,6 +51,7 @@ MEDIA_URL = '/static/'
 
 # Facebook via socialregistration
 INSTALLED_APPS += (
+    'django.contrib.admin',
     'facebook',
     'socialregistration'
 )
@@ -62,6 +63,7 @@ MIDDLEWARE_CLASSES = settings.MIDDLEWARE_CLASSES + (
 )
 TEMPLATE_CONTEXT_PROCESSORS = settings.TEMPLATE_CONTEXT_PROCESSORS + (
     'django.core.context_processors.request',
+    'facebook.context_processors.facebook_info',
 )
 
 if on_production_server:
@@ -73,5 +75,9 @@ else:
     FACEBOOK_API_KEY = '852482d9db128f355cc891748300642b'
     FACEBOOK_APP_SECRET = '50e2c8bc51fcc45926ba84c772b4ef43'
 FACEBOOK_SECRET_KEY = FACEBOOK_APP_SECRET
+
+SOCIALREGISTRATION_GENERATE_USERNAME = True
+LOGIN_REDIRECT_URL = '/'
+LOGOUT_REDIRECT_URL = '/'
 
 SITE_ID = 3

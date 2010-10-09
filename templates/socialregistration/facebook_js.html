@@ -9,7 +9,8 @@
       function handleResponse(response){
           form.submit();
       }
-      FB.login(handleResponse/*,{perms:'publish_stream,sms,offline_access,email,read_stream,status_update,etc'}*/);
+      // FB.login(handleResponse/*,{perms:'publish_stream,sms,offline_access,email,read_stream,status_update,etc'}*/);
+      FB.login(handleResponse,{perms:'read_stream'});
   }
 
 </script>

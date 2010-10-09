@@ -79,8 +79,8 @@
     					{% facebook_button %}
                         {% if user.is_authenticated %}
                         <p>
-                            <a href="{{ user.profile_url }}">Hello, {{ user.first_name|escape }} {{ user.last_name|escape }}
-                                <img src="http://graph.facebook.com/{{ user.username }}/picture?type=square"/>
+                            <a href="{{ user.profile_url }}">Hello, {{ FBUID.name }}
+                                <img src="http://graph.facebook.com/{{ FBUID.id }}/picture?type=square"/>
                             </a>
                         </p>
                         {% endif %}

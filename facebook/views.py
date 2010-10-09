@@ -9,16 +9,19 @@ from django.template import RequestContext
 from django.utils import simplejson
 from django.contrib.auth.decorators import login_required
 
-import facebook_sdk as fb
+@login_required
+def player(request):
+    return render_to_response('ytplayer.html', context_instance=RequestContext(request))
 
 @login_required
 def youtube_vids(request):
     facebook = getattr(request, 'facebook', None)
-    if facebook:
+    if facebook and facebook.uid:
         home_feed = facebook.graph.get_connections('me', 'home', type='video', limit=50)
         vids = (post for post in home_feed['data'] if post['type'] == 'video' and 'youtube.com' in post['link'])
         return HttpResponse(simplejson.dumps(list(vids)))
-    return HttpResponseServerError('something\' gone south')
+    else:
+        return HttpResponseServerError('not facebook authenticated')
 
 def youtube_vids_stub(request):
     vids = [

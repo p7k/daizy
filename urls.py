@@ -1,14 +1,19 @@
 from django.conf import settings
 from django.conf.urls.defaults import *
 
+from django.contrib import admin
+admin.autodiscover()
+
 urlpatterns = patterns('',
+    (r'^admin/', include(admin.site.urls)),
+
     (r'^youtubes/$', 'facebook.views.youtube_vids'),
     (r'^youtubezzz/$', 'facebook.views.youtube_vids_stub'),
     
-    (r'^', include('socialregistration.urls')),
+    (r'^social/', include('socialregistration.urls')),
 
     # for andrey
-    (r'^player/$', 'django.views.generic.simple.direct_to_template', {'template': 'ytplayer.html'}),
+    (r'^player/$', 'facebook.views.player'),
 
     # 960
     (r'^$', 'django.views.generic.simple.direct_to_template', {'template': 'index.html'}),
