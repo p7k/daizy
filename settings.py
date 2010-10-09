@@ -46,14 +46,13 @@ if has_djangoappengine:
 else:
     on_production_server = False
 
-# Media
 MEDIA_URL = '/static/'
 
-# Facebook via socialregistration
 INSTALLED_APPS += (
+    'django.contrib.sites',
     'django.contrib.admin',
+    'socialregistration',
     'facebook',
-    'socialregistration'
 )
 AUTHENTICATION_BACKENDS = settings.AUTHENTICATION_BACKENDS + (
     'socialregistration.auth.FacebookAuth',
@@ -66,18 +65,17 @@ TEMPLATE_CONTEXT_PROCESSORS = settings.TEMPLATE_CONTEXT_PROCESSORS + (
     'facebook.context_processors.facebook_info',
 )
 
-if on_production_server:
-    FACEBOOK_APP_ID = '143155229062210'
-    FACEBOOK_API_KEY = 'b8887dfe5ade767643db465d9d6aaae1'
-    FACEBOOK_APP_SECRET = 'a6371309726429fabc5bb7a469644b22'
-else:
-    FACEBOOK_APP_ID = '113435098718000'
-    FACEBOOK_API_KEY = '852482d9db128f355cc891748300642b'
-    FACEBOOK_APP_SECRET = '50e2c8bc51fcc45926ba84c772b4ef43'
-FACEBOOK_SECRET_KEY = FACEBOOK_APP_SECRET
-
 SOCIALREGISTRATION_GENERATE_USERNAME = True
 LOGIN_REDIRECT_URL = '/'
 LOGOUT_REDIRECT_URL = '/'
 
-SITE_ID = 3
+if on_production_server:
+    SITE_ID = 2
+    FACEBOOK_APP_ID = '143155229062210'
+    FACEBOOK_API_KEY = 'b8887dfe5ade767643db465d9d6aaae1'
+    FACEBOOK_SECRET_KEY = 'a6371309726429fabc5bb7a469644b22'
+else:
+    SITE_ID = 1
+    FACEBOOK_APP_ID = '113435098718000'
+    FACEBOOK_API_KEY = '852482d9db128f355cc891748300642b'
+    FACEBOOK_SECRET_KEY = '50e2c8bc51fcc45926ba84c772b4ef43'

@@ -32,10 +32,10 @@
                             You need Flash player 8+ and JavaScript enabled to view this video.
                         </div>
                         <div>
-                            <a href="javascript:previous()">Back</a>
+                            <a href="javascript:playlist.previous()">Back</a>
                             <a href="javascript:ytplayer.playVideo()">Play</a>
                             <a href="javascript:ytplayer.pauseVideo()">Pause</a>
-                            <a href="javascript:next()">Next</a>
+                            <a href="javascript:playlist.next()">Next</a>
                         </div>
                     </div>
 				</div>
@@ -51,56 +51,50 @@
     var from_el = $('#from');
     var date_el = $('#date');
 
-    // parses id from a full youtube url
+    /* parses id from a full youtube url */
     function parseId (url) { return url.replace(/^[^v]+v.(.{11}).*/,"$1"); }
 
-    // playlist :: vid id provider
-    var playlist = new function () {
-        this.pos = 0;
-        this.posts = {};
-        this.load = function (data) { this.posts = data; };
-        this.fw = function () { if (this.pos < this.posts.length-1) { this.pos++; } };
-        this.rw = function () { if (this.pos > 0 ) { this.pos--; } };
-        this.id = function () {
-            var post = this.posts[this.pos];
-            from_el.val(post.from.name);
-            date_el.val(post.created_time);
-            return parseId(post.link);
-        };
-    };
+    /* gets called once the player is loaded and ready */
+    function onYouTubePlayerReady (playerId) {
+        ytplayer = document.getElementById(atts.id);
+        ytplayer.addEventListener('onStateChange', 'onStateChangeListener');
 
-     // gets called once the player is loaded and ready
-     function onYouTubePlayerReady (playerId) {
-         ytplayer = document.getElementById(atts.id);
-
-         ytplayer.addEventListener('onStateChange', 'onStateChangeListener');
-
-         $.getJSON('{% url facebook.views.youtube_vids %}', function(data) {
-             playlist.load(data);
-             ytplayer.cueVideoById(playlist.id());
-             $('#loading').hide();
-         });
-     }
+        // fetch the vid posts and load the playlist
+        $.getJSON('{% url facebook.views.youtube_vids %}', function(data) {
+            playlist = new function () {
+                this.i = 0;
+                this.posts = data;
+                this.fw = function () { if (this.i < this.posts.length - 1) { this.i++ } else { this.i = 0 } };
+                this.rw = function () { if (this.i > 0 ) { this.i-- } else { this.i = this.posts.length - 1} };
+                this.id = function () {
+                    var post = this.posts[this.i];
+                    from_el.val(post.from.name);
+                    date_el.val(post.created_time);
+                    return parseId(post.link);
+                };
+                this.next = function () { this.fw(); ytplayer.loadVideoById(this.id()) };
+                this.previous = function () { this.rw(); ytplayer.loadVideoById(this.id()) }
+            };
+            ytplayer.cueVideoById(playlist.id());
+            $('#loading').hide();
+        });
+    }
 
     function onStateChangeListener (newState) {
         switch(newState) {
-            // ended
-            case 0:
-                playlist.fw(); 
+            case 0:  // ended
+                playlist.fw();
                 ytplayer.loadVideoById(playlist.id());
                 break;
-            // cued
-            case 5:
+            case 5:  // cued
                 if (ytplayer && ytplayer.getDuration) {
                     duration_el.val(ytplayer.getDuration());
                 };
+                break;
         };
     }
 
-    function next () { playlist.fw(); ytplayer.loadVideoById(playlist.id()); }
-    function previous () { playlist.rw(); ytplayer.loadVideoById(playlist.id()); }
-
     swfobject.embedSWF("http://www.youtube.com/apiplayer?&enablejsapi=1&playerapiid=ytapiplayer",
-                     "ytapiplayer", "480", "295", "8", null, null, params, atts);
+                        "ytapiplayer", "480", "295", "8", null, null, params, atts);
 </script>
 {% endblock %}
