@@ -16,6 +16,8 @@
 		<!--[if IE 6]><link rel="stylesheet" type="text/css" href="../../../css/ie6.css" media="screen" /><![endif]-->
 		<!--[if IE 7]><link rel="stylesheet" type="text/css" href="../../../css/ie.css" media="screen" /><![endif]-->
 		<script type="text/javascript" src="{{ MEDIA_URL }}js/jquery-1.4.2.min.js"></script>
+		<script type="text/javascript" src="{{ MEDIA_URL }}js/jquery-ui.js"></script>
+		<script type="text/javascript" src="{{ MEDIA_URL }}js/jquery-fluid16.js"></script>
         {% block preload_js %}{% endblock %}
 	</head>
 	<body>
@@ -74,21 +76,14 @@
 						<a href="#" id="toggle-login-forms">Login Options</a>
 					</h2>
 					<div class="block" id="login-forms">
-						<form action="">
-							<fieldset class="login">
-								<legend>Facebook</legend>
-								<p class="notice">Login to watch your facebook vids.</p>
-								{% facebook_button %}
-                                {% if user.is_authenticated %}
-                                <p>
-                                    <a href="{{ user.profile_url }}">Hello, {{ user.first_name|escape }} {{ user.last_name|escape }}
-                                        <img src="http://graph.facebook.com/{{ user.username }}/picture?type=square"/>
-                                    </a>
-                                </p>
-                                {% endif %}
-                                <div id="fb-root"></div>
-							</fieldset>
-						</form>
+    					{% facebook_button %}
+                        {% if user.is_authenticated %}
+                        <p>
+                            <a href="{{ user.profile_url }}">Hello, {{ user.first_name|escape }} {{ user.last_name|escape }}
+                                <img src="http://graph.facebook.com/{{ user.username }}/picture?type=square"/>
+                            </a>
+                        </p>
+                        {% endif %}
 					</div>
 				</div>
 				<div class="box articles">
@@ -121,8 +116,7 @@
 			<div class="clear"></div>
 		</div>
 		
-		<script type="text/javascript" src="{{ MEDIA_URL }}js/jquery-ui.js"></script>
-		<script type="text/javascript" src="{{ MEDIA_URL }}js/jquery-fluid16.js"></script>
         {% facebook_js %}
+        {% block js %}{% endblock %}
 	</body>
 </html>

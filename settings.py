@@ -17,8 +17,8 @@ INSTALLED_APPS = (
     'django.contrib.sessions',
 )
 
-if has_djangoappengine:
-    INSTALLED_APPS = ('djangoappengine',) + INSTALLED_APPS
+# if has_djangoappengine:
+#     INSTALLED_APPS = ('djangoappengine',) + INSTALLED_APPS
 
 TEST_RUNNER = 'djangotoolbox.test.CapturingTestSuiteRunner'
 
@@ -61,7 +61,6 @@ MIDDLEWARE_CLASSES = settings.MIDDLEWARE_CLASSES + (
     'socialregistration.middleware.FacebookMiddleware',
 )
 TEMPLATE_CONTEXT_PROCESSORS = settings.TEMPLATE_CONTEXT_PROCESSORS + (
-    'facebook.context_processors.facebook_app_id',
     'django.core.context_processors.request',
 )
 
@@ -75,3 +74,4 @@ else:
     FACEBOOK_APP_SECRET = '50e2c8bc51fcc45926ba84c772b4ef43'
 FACEBOOK_SECRET_KEY = FACEBOOK_APP_SECRET
 
+SITE_ID = 3
