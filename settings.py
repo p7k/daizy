@@ -40,19 +40,30 @@ except ImportError:
 #################################################################
 #########################  MY SETTINGS  #########################
 #################################################################
+from django.conf import settings
 if has_djangoappengine:
     from djangoappengine.utils import on_production_server
 else:
     on_production_server = False
 
 # Media
-TEMPLATE_CONTEXT_PROCESSORS = ('django.core.context_processors.media',)
 MEDIA_URL = '/static/'
 
-# Facebook
-INSTALLED_APPS += ('facebook',)
-AUTHENTICATION_BACKENDS = ('facebook.backends.FacebookBackend',)
-TEMPLATE_CONTEXT_PROCESSORS += ('facebook.context_processors.facebook_app_id',)
+# Facebook via socialregistration
+INSTALLED_APPS += (
+    'facebook',
+    'socialregistration'
+)
+AUTHENTICATION_BACKENDS = settings.AUTHENTICATION_BACKENDS + (
+    'socialregistration.auth.FacebookAuth',
+)
+MIDDLEWARE_CLASSES = settings.MIDDLEWARE_CLASSES + (
+    'socialregistration.middleware.FacebookMiddleware',
+)
+TEMPLATE_CONTEXT_PROCESSORS = settings.TEMPLATE_CONTEXT_PROCESSORS + (
+    'facebook.context_processors.facebook_app_id',
+    'django.core.context_processors.request',
+)
 
 if on_production_server:
     FACEBOOK_APP_ID = '143155229062210'
@@ -62,3 +73,5 @@ else:
     FACEBOOK_APP_ID = '113435098718000'
     FACEBOOK_API_KEY = '852482d9db128f355cc891748300642b'
     FACEBOOK_APP_SECRET = '50e2c8bc51fcc45926ba84c772b4ef43'
+FACEBOOK_SECRET_KEY = FACEBOOK_APP_SECRET
+

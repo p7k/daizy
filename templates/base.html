@@ -1,3 +1,4 @@
+{% load facebook_tags %}
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml"
     dir="{% if LANGUAGE_BIDI %}rtl{% else %}ltr{% endif %}"
@@ -6,15 +7,15 @@
 	<head>
 		<meta http-equiv="content-type" content="text/html; charset=utf-8" />
 		<title>{% block title %}{% endblock %} - daisy</title>
-		<link rel="stylesheet" type="text/css" href="{{ MEDIA_URL }}/css/reset.css" media="screen" />
-		<link rel="stylesheet" type="text/css" href="{{ MEDIA_URL }}/css/text.css" media="screen" />
-		<link rel="stylesheet" type="text/css" href="{{ MEDIA_URL }}/css/960.css" media="screen" />
-		<link rel="stylesheet" type="text/css" href="{{ MEDIA_URL }}/css/layout.css" media="screen" />
-		<link rel="stylesheet" type="text/css" href="{{ MEDIA_URL }}/css/nav.css" media="screen" />
+		<link rel="stylesheet" type="text/css" href="{{ MEDIA_URL }}css/reset.css" media="screen" />
+		<link rel="stylesheet" type="text/css" href="{{ MEDIA_URL }}css/text.css" media="screen" />
+		<link rel="stylesheet" type="text/css" href="{{ MEDIA_URL }}css/960.css" media="screen" />
+		<link rel="stylesheet" type="text/css" href="{{ MEDIA_URL }}css/layout.css" media="screen" />
+		<link rel="stylesheet" type="text/css" href="{{ MEDIA_URL }}css/nav.css" media="screen" />
 		{% block css %}{% endblock %}
 		<!--[if IE 6]><link rel="stylesheet" type="text/css" href="../../../css/ie6.css" media="screen" /><![endif]-->
 		<!--[if IE 7]><link rel="stylesheet" type="text/css" href="../../../css/ie.css" media="screen" /><![endif]-->
-		<script type="text/javascript" src="{{ MEDIA_URL }}/js/jquery-1.4.2.min.js"></script>
+		<script type="text/javascript" src="{{ MEDIA_URL }}js/jquery-1.4.2.min.js"></script>
         {% block preload_js %}{% endblock %}
 	</head>
 	<body>
@@ -77,8 +78,8 @@
 							<fieldset class="login">
 								<legend>Facebook</legend>
 								<p class="notice">Login to watch your facebook vids.</p>
-								<fb:login-button autologoutlink="true"></fb:login-button>
-								{% if user.is_authenticated %}
+								{% facebook_button %}
+                                {% if user.is_authenticated %}
                                 <p>
                                     <a href="{{ user.profile_url }}">Hello, {{ user.first_name|escape }} {{ user.last_name|escape }}
                                         <img src="http://graph.facebook.com/{{ user.username }}/picture?type=square"/>
@@ -101,8 +102,8 @@
 							</h3>
 							<h4>A Hot Debutant</h4>
 							<p class="meta">Moscow, Russia — Friday, 1 October 2010</p>
-							<a href="{{ MEDIA_URL }}/img/pres_shot.jpg" class="image">
-								<img src="{{ MEDIA_URL }}/img/pres_shot.jpg" width="60" height="60" alt="photo" />
+							<a href="{{ MEDIA_URL }}img/pres_shot.jpg" class="image">
+								<img src="{{ MEDIA_URL }}img/pres_shot.jpg" width="60" height="60" alt="photo" />
 							</a>
 							<p>Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat. Ut wisi enim ad minim veniam, quis nostrud exerci tation ullamcorper suscipit lobortis nisl ut aliquip ex ea commodo consequat. <a href="#">Visit site.</a></p>
 						</div>
@@ -120,37 +121,8 @@
 			<div class="clear"></div>
 		</div>
 		
-		<script type="text/javascript" src="{{ MEDIA_URL }}/js/jquery-ui.js"></script>
-		<script type="text/javascript" src="{{ MEDIA_URL }}/js/jquery-fluid16.js"></script>
-		<script type="text/javascript" src="{{ MEDIA_URL }}/js/fbsdk.js"></script>
-		<script>
-          window.fbAsyncInit = function() {
-            FB.init({
-                appId: '{{ FACEBOOK_APP_ID }}',
-                status: true,
-                cookie: true,
-                xfbml: true
-            });
-            FB.Event.subscribe('auth.login', function(response) {
-                FB.login(function(response) {
-                  if (response.session) {
-                    if (response.perms) {
-                      // user is logged in and granted some permissions.
-                      // perms is a comma separated list of granted permissions
-                    } else {
-                      // user is logged in, but did not grant any permissions
-                    }
-                  } else {
-                    // user is not logged in
-                  }
-                }, {perms:'read_stream,user_videos'});
-              window.location.reload();
-            });
-            FB.Event.subscribe('auth.logout', function(response) {
-                window.location.reload();
-            });
-          };
-        </script>
-        {% block js %}{% endblock %}
+		<script type="text/javascript" src="{{ MEDIA_URL }}js/jquery-ui.js"></script>
+		<script type="text/javascript" src="{{ MEDIA_URL }}js/jquery-fluid16.js"></script>
+        {% facebook_js %}
 	</body>
 </html>
