@@ -7,13 +7,13 @@ admin.autodiscover()
 urlpatterns = patterns('',
     (r'^admin/', include(admin.site.urls)),
 
-    (r'^youtubes/$', 'facebook.views.youtube_vids'),
-    (r'^youtubezzz/$', 'facebook.views.youtube_vids_stub'),
-    
     (r'^social/', include('socialregistration.urls')),
 
-    # for andrey
+    (r'^youtubes/$', 'facebook.views.youtube_vids'),
+    (r'^youtubezzz/$', 'facebook.views.youtube_vids_stub'),    
+
     (r'^player/$', 'facebook.views.player'),
+    (r'^canvas/$', 'facebook.views.canvas'),
 
     # 960
     (r'^$', 'django.views.generic.simple.direct_to_template', {'template': 'index.html'}),
