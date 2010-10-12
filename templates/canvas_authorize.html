@@ -1,0 +1,17 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+    dir="{% if LANGUAGE_BIDI %}rtl{% else %}ltr{% endif %}"
+    xml:lang="{% firstof LANGUAGE_CODE 'en' %}"
+    lang="{% firstof LANGUAGE_CODE 'en' %}">
+	<head>
+		<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+        <script type="text/javascript">
+            function auth_redirect() {
+                top.location = "https://graph.facebook.com/oauth/authorize?client_id=113435098718000&redirect_uri=http://apps.facebook.com/daizy_test/&type=user_agent&display=page&scope=read_stream";
+            }
+        </script>
+    </head>
+    <body id="canvas_authorize" onload="auth_redirect();">
+        <p>Redirecting for facebook authorization</p>
+    </body>
+</html>
