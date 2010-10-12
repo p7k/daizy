@@ -17,8 +17,8 @@ INSTALLED_APPS = (
     'django.contrib.sessions',
 )
 
-# if has_djangoappengine:
-#     INSTALLED_APPS = ('djangoappengine',) + INSTALLED_APPS
+if has_djangoappengine:
+    INSTALLED_APPS = ('djangoappengine',) + INSTALLED_APPS
 
 TEST_RUNNER = 'djangotoolbox.test.CapturingTestSuiteRunner'
 

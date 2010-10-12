@@ -41,6 +41,7 @@ def youtube_vids_stub(request):
 # TODO perhaps this is entirely unnecessarry
 # TODO look into doing the decoding using oauth2 module
 import socialregistration.facebook as fb_sdk
+from utils import iterytlinks
 def canvas(request):
     """services facebook canvas"""
     signed_request = request.GET.get('signed_request')
@@ -57,24 +58,15 @@ def canvas(request):
         return HttpResponseRedirect(settings.LOGIN_REDIRECT_URL)
 
     oauth_token = data.get('oauth_token')
+
+    # request authorization / extended permissions
     if not oauth_token:
         return render_to_response('canvas_authorize.html', context_instance=RequestContext(request))
 
-    # import ipdb; ipdb.set_trace()
     graph = fb_sdk.GraphAPI(data['oauth_token'])
     # fb_info = graph.get_object('me', fields='name,location')
 
-    def iter_links(results):
-        for r in results:
-            attachment = r['attachment']
-            media_list = attachment.get('media')
-            if media_list:
-                for media in media_list:
-                    href = media.get('href')
-                    if href and 'youtube' in href:
-                        yield href
-
-    json_results = graph.fql('SELECT attachment.media FROM stream WHERE filter_key="nf" LIMIT 50')
-    sources = set(iter_links(json_results))
+    json_results = graph.fql('SELECT attachment.media FROM stream WHERE filter_key="nf" LIMIT 100')
+    sources = set(iterytlinks(json_results))
     ctx = dict(youtubes=simplejson.dumps(tuple(sources)))
     return render_to_response('canvas.html', ctx, context_instance=RequestContext(request))

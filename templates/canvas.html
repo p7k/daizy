@@ -55,11 +55,8 @@
 	
 	<script type="text/javascript">
         var atts = { id: "myytplayer" };
-        var params = { allowScriptAccess: "always" };
+        var params = { allowScriptAccess: "always", menu: "true"};
         var youtubes = {{ youtubes|safe }};
-
-        /* parses id from a full youtube url */
-        function parseId (url) { return url.replace(/^[^v]+v.(.{11}).*/,"$1"); }
 
         /* gets called once the player is loaded and ready */
         function onYouTubePlayerReady (playerId) {
@@ -75,7 +72,7 @@
                     var post = this.posts[this.i];
                     // from_el.val(post.from.name);
                     // date_el.val(post.created_time);
-                    return parseId(post);
+                    return post;
                 };
                 this.next = function () { this.fw(); ytplayer.loadVideoById(this.id()) };
                 this.previous = function () { this.rw(); ytplayer.loadVideoById(this.id()) }
