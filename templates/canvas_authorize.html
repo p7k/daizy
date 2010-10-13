@@ -7,7 +7,7 @@
 		<meta http-equiv="content-type" content="text/html; charset=utf-8" />
         <script type="text/javascript">
             function auth_redirect() {
-                top.location = "https://graph.facebook.com/oauth/authorize?client_id=113435098718000&redirect_uri=http://apps.facebook.com/daizy_test/&type=user_agent&display=page&scope=read_stream";
+                top.location = "https://graph.facebook.com/oauth/authorize?client_id={{ FACEBOOK_APP_ID }}&redirect_uri=http://apps.facebook.com/{{ FACEBOOK_APP_NAME }}/&type=user_agent&display=page&scope=read_stream";
             }
         </script>
     </head>

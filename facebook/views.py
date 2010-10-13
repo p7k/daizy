@@ -61,7 +61,11 @@ def canvas(request):
 
     # request authorization / extended permissions
     if not oauth_token:
-        return render_to_response('canvas_authorize.html', context_instance=RequestContext(request))
+        fb_info = {
+            'FACEBOOK_APP_NAME': settings.FACEBOOK_APP_NAME,
+            'FACEBOOK_APP_ID': settings.FACEBOOK_APP_ID,
+        }
+        return render_to_response('canvas_authorize.html', fb_info, context_instance=RequestContext(request))
 
     graph = fb_sdk.GraphAPI(data['oauth_token'])
     # fb_info = graph.get_object('me', fields='name,location')
