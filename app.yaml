@@ -17,5 +17,10 @@ handlers:
 - url: /media/admin
   static_dir: django/contrib/admin/media/
 
+# - url: /sessioncleanup
+#   script: "cleanup.py"
+#   login: admin
+
 - url: /.*
   script: djangoappengine/main/main.py
+

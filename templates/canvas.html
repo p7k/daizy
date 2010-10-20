@@ -52,11 +52,10 @@
             <a class='button' href="javascript:playlist.next()"><span>Next</span></a>
         </div>
 	</body>
-	
+
 	<script type="text/javascript">
         var atts = { id: "myytplayer" };
         var params = { allowScriptAccess: "always", menu: "true"};
-        var youtubes = {{ youtubes|safe }};
 
         /* gets called once the player is loaded and ready */
         function onYouTubePlayerReady (playerId) {
@@ -65,20 +64,32 @@
 
             playlist = new function () {
                 this.i = 0;
-                this.posts = youtubes;
+                this.posts = [];
+                this.load = function (data) {
+                    for (var i = data.length - 1; i >= 0; i--){
+                        this.posts.push(data[i]);
+                    };
+                };
                 this.fw = function () { if (this.i < this.posts.length - 1) { this.i++ } else { this.i = 0 } };
                 this.rw = function () { if (this.i > 0 ) { this.i-- } else { this.i = this.posts.length - 1} };
                 this.id = function () {
-                    var post = this.posts[this.i];
-                    // from_el.val(post.from.name);
-                    // date_el.val(post.created_time);
-                    return post;
+                    if (this.i > this.posts.length - 3) fetch_youtubes(false);
+                    return this.posts[this.i];
                 };
                 this.next = function () { this.fw(); ytplayer.loadVideoById(this.id()) };
                 this.previous = function () { this.rw(); ytplayer.loadVideoById(this.id()) }
             };
-            ytplayer.cueVideoById(playlist.id());
+
+            function fetch_youtubes(cue) {
+                $.getJSON('{% url facebook.views.youtube_increment %}', function(data) {
+                    playlist.load(data);
+                    if (cue == true) ytplayer.cueVideoById(playlist.id());
+                });
+            }
+
+            fetch_youtubes(true);
         }
+
 
         function onStateChangeListener (newState) {
             switch(newState) {

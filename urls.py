@@ -10,7 +10,8 @@ urlpatterns = patterns('',
     (r'^social/', include('socialregistration.urls')),
 
     (r'^youtubes/$', 'facebook.views.youtube_vids'),
-    (r'^youtubezzz/$', 'facebook.views.youtube_vids_stub'),    
+    (r'^youtubezzz/$', 'facebook.views.youtube_vids_stub'),
+    (r'^ytinc/$', 'facebook.views.youtube_increment'),
 
     (r'^player/$', 'facebook.views.player'),
     (r'^canvas/$', 'facebook.views.canvas'),
