@@ -51,9 +51,18 @@
             <a class='button' href="javascript:ytplayer.pauseVideo()"><span>Pause</span></a>
             <a class='button' href="javascript:playlist.next()"><span>Next</span></a>
         </div>
+
+        <div>
+            <iframe  id="postFrame"  frameborder="0"></iframe>
+        </div>
 	</body>
 
 	<script type="text/javascript">
+        function showWebSite (val) {
+              document.all.postFrame.src=val;
+              document.all.postFrame.style.visibility="visible";
+        }
+
         var atts = { id: "myytplayer" };
         var params = { allowScriptAccess: "always", menu: "true"};
 
@@ -66,15 +75,17 @@
                 this.i = 0;
                 this.posts = [];
                 this.load = function (data) {
-                    for (var i = data.length - 1; i >= 0; i--){
-                        this.posts.push(data[i]);
-                    };
+                    this.posts.push.apply(this.posts, data);
+                    // for (var i = data.length - 1; i >= 0; i--){
+                    //     this.posts.push(data[i]);
+                    // };
                 };
                 this.fw = function () { if (this.i < this.posts.length - 1) { this.i++ } else { this.i = 0 } };
                 this.rw = function () { if (this.i > 0 ) { this.i-- } else { this.i = this.posts.length - 1} };
                 this.id = function () {
                     if (this.i > this.posts.length - 3) fetch_youtubes(false);
-                    return this.posts[this.i];
+                    showWebSite(this.posts[this.i].permalink);
+                    return this.posts[this.i].youtube_id;
                 };
                 this.next = function () { this.fw(); ytplayer.loadVideoById(this.id()) };
                 this.previous = function () { this.rw(); ytplayer.loadVideoById(this.id()) }

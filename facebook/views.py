@@ -7,6 +7,8 @@ from django.contrib.auth import login, authenticate
 from django.conf import settings
 from djangotoolbox.http import JSONResponse
 from socialregistration.models import FacebookProfile
+from time import mktime
+from datetime import datetime
 
 @login_required
 def player(request):
@@ -43,7 +45,6 @@ def youtube_vids_stub(request):
 # TODO perhaps this is entirely unnecessarry
 # TODO look into doing the decoding using oauth2 module
 import socialregistration.facebook as fb_sdk
-from utils import iterytlinks
 def canvas(request):
     """services facebook canvas"""
     signed_request = request.GET.get('signed_request')
@@ -108,33 +109,27 @@ def fb_account_setup(request, user, facebook_profile):
         login(request, user)
 
 
-# yt fetcher ################################################################
-now_timestamp = lambda: time.mktime(datetime.datetime.now().timetuple())
-
 def fql_query(uid, timestamp, limit):
     # TODO look into filtering (WHERE filter_key="nf")
-    return 'SELECT attachment.media, created_time FROM stream WHERE source_id IN (SELECT target_id FROM connection WHERE source_id = %(uid)i) AND is_hidden = 0 AND created_time < %(timestamp)i LIMIT %(limit)i' % {
+    return 'SELECT %(stream_fields)s FROM stream WHERE source_id IN (SELECT target_id FROM connection WHERE source_id = %(uid)i) AND is_hidden = 0 AND created_time < %(timestamp)i LIMIT %(limit)i' % {
+        'stream_fields': "post_id, attachment.media, created_time, permalink",
         'uid': int(uid),
         'timestamp': int(timestamp),
         'limit': int(limit)
     }
 
-import time, datetime
+from utils import iter_prep_posts
+now_timestamp = lambda: mktime(datetime.now().timetuple())
 @login_required
-def youtube_increment(request, limit=30, max_attempts=3):
+def youtube_increment(request, limit=30):
     graph = fb_sdk.GraphAPI(request.session['oauth_token'])
     facebook_profile = FacebookProfile.objects.get(user=request.user)
-
-    # del request.session['facebook_timestamp']
-
-    sources = set()
+    sources = None
     while not sources:
         timestamp = request.session.get('facebook_timestamp', now_timestamp())
         fql = fql_query(facebook_profile.uid, timestamp, limit)
         json_results = graph.fql(fql)
         if not json_results: break
         request.session['facebook_timestamp'] = json_results[-1]['created_time']
-        sources = set(iterytlinks(json_results))
-
-    return JSONResponse(tuple(sources))
-
+        sources = tuple(iter_prep_posts(json_results))
+    return JSONResponse(sources)
