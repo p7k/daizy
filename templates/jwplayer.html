@@ -1,0 +1,34 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+    dir="{% if LANGUAGE_BIDI %}rtl{% else %}ltr{% endif %}"
+    xml:lang="{% firstof LANGUAGE_CODE 'en' %}"
+    lang="{% firstof LANGUAGE_CODE 'en' %}">
+    <head>
+        <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+        <script type="text/javascript" src="{{ MEDIA_URL }}js/jwplayer.js"></script>
+    </head>
+    <body id="jwplayer">
+        <div id="container">Loading the player ...</div>
+    </body>
+    <script type="text/javascript">
+        jwplayer("container").setup({
+            flashplayer: '{{ MEDIA_URL }}swf/player.swf',
+            playlist: [
+                    {
+                        file: "http://www.youtube.com/watch?v=hvteg6FFoYU",
+                    },
+                    {
+                        file: 'http://static.ak.fbcdn.net/rsrc.php/zz/r/nLOCYmKWrsR.swf?v=63079945238&ev=0',
+                        // file: 'http://www.facebook.com/v/63079945238',
+                    },
+                    {
+                        file: "{{ MEDIA_URL }}vid/video.mp4",
+                    }
+                ], 
+            "playlist.position": "right",
+            "playlist.size": 360,
+            height: 270,
+            width: 900
+        });
+    </script>
+</html>

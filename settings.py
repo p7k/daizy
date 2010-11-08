@@ -34,7 +34,7 @@ ROOT_URLCONF = 'urls'
 
 # Activate django-dbindexer if available
 try:
-    import dbindexer
+    # import dbindexer
     DATABASES['native'] = DATABASES['default']
     DATABASES['default'] = {'ENGINE': 'dbindexer', 'TARGET': 'native'}
     INSTALLED_APPS += ('dbindexer',)
@@ -44,19 +44,20 @@ except ImportError:
 #################################################################
 #########################  MY SETTINGS  #########################
 #################################################################
-from django.conf import settings
-
 INSTALLED_APPS += (
     'socialregistration',
     'facebook',
 )
-AUTHENTICATION_BACKENDS = settings.AUTHENTICATION_BACKENDS + (
+
+# does it have to be this difficult to extend the damn settings?
+from django.conf.global_settings import AUTHENTICATION_BACKENDS, MIDDLEWARE_CLASSES, TEMPLATE_CONTEXT_PROCESSORS
+AUTHENTICATION_BACKENDS = AUTHENTICATION_BACKENDS + (
     'socialregistration.auth.FacebookAuth',
 )
-MIDDLEWARE_CLASSES = settings.MIDDLEWARE_CLASSES + (
+MIDDLEWARE_CLASSES = MIDDLEWARE_CLASSES + (
     'socialregistration.middleware.FacebookMiddleware',
 )
-TEMPLATE_CONTEXT_PROCESSORS = settings.TEMPLATE_CONTEXT_PROCESSORS + (
+TEMPLATE_CONTEXT_PROCESSORS = TEMPLATE_CONTEXT_PROCESSORS + (
     'django.core.context_processors.request',
     'facebook.context_processors.facebook_info',
 )

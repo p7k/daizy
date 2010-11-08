@@ -31,5 +31,10 @@ def iter_prep_posts(posts):
         if youtube_id:
             yield dict(
                 youtube_id=youtube_id,
+                post_id=post['post_id'],
                 permalink=post['permalink']
             )
+
+# def iter_video_posts(posts):
+#     for post in posts:
+        

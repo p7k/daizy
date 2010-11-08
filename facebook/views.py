@@ -46,6 +46,9 @@ def youtube_vids_stub(request):
 # TODO look into doing the decoding using oauth2 module
 import socialregistration.facebook as fb_sdk
 def canvas(request):
+    import os
+    os.linesep
+    import ipdb; ipdb.set_trace()
     """services facebook canvas"""
     signed_request = request.GET.get('signed_request')
 
@@ -128,6 +131,7 @@ def youtube_increment(request, limit=30):
     while not sources:
         timestamp = request.session.get('facebook_timestamp', now_timestamp())
         fql = fql_query(facebook_profile.uid, timestamp, limit)
+        import pdb,sys; pdb.Pdb(stdin=getattr(sys,'__stdin__'),stdout=getattr(sys,'__stderr__')).set_trace()
         json_results = graph.fql(fql)
         if not json_results: break
         request.session['facebook_timestamp'] = json_results[-1]['created_time']
