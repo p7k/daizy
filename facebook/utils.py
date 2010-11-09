@@ -35,6 +35,12 @@ def iter_prep_posts(posts):
                 permalink=post['permalink']
             )
 
-# def iter_video_posts(posts):
-#     for post in posts:
-        
+def iter_video_posts(posts):
+    for post in posts:
+        attachment = post['attachment']
+        media_list = attachment.get('media')
+        if media_list:
+            for media in media_list:
+                media_type = media.get('type')
+                if media_type == 'video':
+                    yield post

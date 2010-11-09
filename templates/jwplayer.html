@@ -11,24 +11,41 @@
         <div id="container">Loading the player ...</div>
     </body>
     <script type="text/javascript">
-        jwplayer("container").setup({
-            flashplayer: '{{ MEDIA_URL }}swf/player.swf',
-            playlist: [
-                    {
-                        file: "http://www.youtube.com/watch?v=hvteg6FFoYU",
-                    },
-                    {
-                        file: 'http://static.ak.fbcdn.net/rsrc.php/zz/r/nLOCYmKWrsR.swf?v=63079945238&ev=0',
-                        // file: 'http://www.facebook.com/v/63079945238',
-                    },
-                    {
-                        file: "{{ MEDIA_URL }}vid/video.mp4",
-                    }
-                ], 
-            "playlist.position": "right",
-            "playlist.size": 360,
-            height: 270,
-            width: 900
-        });
+        var new_items = [];
+
+        var player = jwplayer("container");
+        player
+            .setup({
+                flashplayer: '{{ MEDIA_URL }}swf/player.swf',
+                height: 300, width: 900,
+                "playlist.position": "right",
+                "playlist.size": 360,
+            })
+            .onComplete(function () { //alert('onComplete');
+                this.playlistNext();
+            })
+            .onReady(function () { //alert('onReady');
+                this.load([
+                    {file: 'http://www.youtube.com/watch?v=hvteg6FFoYU'},
+                ]);
+                setTimeout(function() { alert('adding 1st');
+                    addPlaylistItem({file: 'http://www.youtube.com/v/B7_rPDwSKe8&autoplay=1'});
+                }, 3000);
+                setTimeout(function() { alert('adding 2nd');
+                    addPlaylistItem({file: 'http://video.ak.fbcdn.net/cfs-ak-ash2/42237/11/10100192379626500_14648.mp4?h=7c00a34782268a43a78a7f58063fbabd&r=1960'});
+                }, 34000);
+                this.play();
+            })
+            .onIdle(function (old_state) { //alert('onIdle');
+                if (new_items.length > 0) {
+                    new_playlist=this.getPlaylist().concat(new_items);
+                    new_items = [];
+                    this.load(new_playlist);
+                }
+            });
+
+        function addPlaylistItem (playlist_item) {
+            new_items.push(playlist_item);
+        }
     </script>
 </html>
