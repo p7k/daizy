@@ -5,6 +5,7 @@ api_version: 1
 
 builtins:
 - remote_api: on
+- datastore_admin: on
 
 handlers:
 - url: /_ah/queue/deferred
@@ -14,6 +15,9 @@ handlers:
 - url: /media/admin
   static_dir: django/contrib/admin/media
   expiration: '0'
+
+- url: /files
+  static_dir: static
 
 - url: /.*
   script: djangoappengine/main/main.py

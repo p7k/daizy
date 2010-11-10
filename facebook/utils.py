@@ -1,46 +1,49 @@
-import re
+import uuid
+from time import mktime
+from datetime import datetime
+from socialregistration.forms import UserForm
+from django.contrib.auth import login
 
-id_re = re.compile(r'^[^v]+v.(.{11}).*')
-def parse_youtube_id(link): 
-    return id_re.sub(r'\1', link)
+def now_timestamp():
+    return mktime(datetime.now().timetuple())
 
-# deprecated
-def iterytlinks(results):
-    for r in results:
-        attachment = r['attachment']
-        media_list = attachment.get('media')
-        if media_list:
-            for media in media_list:
-                href = media.get('href')
-                if href and 'youtube' in href:
-                    yield parse_youtube_id(href)
+def fb_account_setup(request, user, facebook_profile):
+    form = UserForm(user, facebook_profile)
+    if form.is_valid():
+        form.save(request=request)
+        user = form.profile.authenticate()
+        login(request, user)
+    else:
+        # Generate user and profile
+        user.username = str(uuid.uuid4())[:30]
+        user.save()
 
-def get_youtube_id(post):
+        facebook_profile.user = user
+        facebook_profile.save()
+
+        # Authenticate and login
+        user = facebook_profile.authenticate()
+        login(request, user)
+
+def fql_query(timestamp, source_id='me()', limit=50):
+    # TODO look into filtering (WHERE filter_key="nf")
+    return 'SELECT %(stream_fields)s FROM stream WHERE source_id IN (SELECT target_id FROM connection WHERE source_id = %(source_id)s) AND is_hidden = 0 AND created_time < %(timestamp)s LIMIT %(limit)s' % {
+        'stream_fields': 'post_id, attachment.media, created_time, permalink',
+        'source_id': source_id,
+        'timestamp': int(timestamp),
+        'limit': int(limit)
+    }
+
+def skinny_video_post(post):
     attachment = post['attachment']
     media_list = attachment.get('media')
     if media_list:
         for media in media_list:
-            href = media.get('href')
-            if href and 'youtube' in href:
-                return parse_youtube_id(href)
-    return None
-
-def iter_prep_posts(posts):
-    for post in posts:
-        youtube_id = get_youtube_id(post)
-        if youtube_id:
-            yield dict(
-                youtube_id=youtube_id,
-                post_id=post['post_id'],
-                permalink=post['permalink']
-            )
-
-def iter_video_posts(posts):
-    for post in posts:
-        attachment = post['attachment']
-        media_list = attachment.get('media')
-        if media_list:
-            for media in media_list:
-                media_type = media.get('type')
-                if media_type == 'video':
-                    yield post
+            video = media.get('video')
+            if video:
+                return {
+                    'post_id': post['post_id'],
+                    'permalink': post['permalink'],
+                    'vid_src': video['source_url'],
+                    'img_src': media['src'],
+                }

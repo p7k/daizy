@@ -7,23 +7,21 @@ from django.contrib import admin
 admin.autodiscover()
 
 urlpatterns = patterns('',
-    ('^$', 'django.views.generic.simple.direct_to_template', {'template': 'home.html'}),
+    # ('^$', 'django.views.generic.simple.direct_to_template', {'template': 'home.html'}),
     (r'^admin/', include(admin.site.urls)),
 
     (r'^social/', include('socialregistration.urls')),
 
-    (r'^youtubes/$', 'facebook.views.youtube_vids'),
-    (r'^youtubezzz/$', 'facebook.views.youtube_vids_stub'),
-    (r'^ytinc/$', 'facebook.views.youtube_increment'),
-
-    (r'^player/$', 'facebook.views.player'),
     (r'^canvas/$', 'facebook.views.canvas'),
+    (r'^videos/$', 'facebook.views.videos_increment'),
 
     # 960
     (r'^$', 'django.views.generic.simple.direct_to_template', {'template': 'index.html'}),
 
+    # media
+    # (r'^files/(?P<path>.*)$', 'django.views.static.serve', {'document_root': settings.STATICFILES_DIRS[0]}),
+
+    # testing only
     (r'^jw/$', 'django.views.generic.simple.direct_to_template', {'template': 'jwplayer.html'}),
 
-    # media
-    (r'^files/(?P<path>.*)$', 'django.views.static.serve', {'document_root': settings.STATICFILES_DIRS[0]}),
 )

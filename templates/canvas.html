@@ -3,116 +3,57 @@
     dir="{% if LANGUAGE_BIDI %}rtl{% else %}ltr{% endif %}"
     xml:lang="{% firstof LANGUAGE_CODE 'en' %}"
     lang="{% firstof LANGUAGE_CODE 'en' %}">
-	<head>
-		<meta http-equiv="content-type" content="text/html; charset=utf-8" />
-        <script src="http://connect.facebook.net/en_US/all.js#appId=113435098718000&amp;xfbml=0"></script>
-		<script type="text/javascript" src="{{ MEDIA_URL }}js/jquery-1.4.2.min.js"></script>
-		<script type="text/javascript" src="{{ MEDIA_URL }}js/swfobject.js"></script>
-		<style type="text/css" media="screen">
-		  .clear { /* generic container (i.e. div) for floating buttons */
-              overflow: hidden;
-              width: 100%;
-          }
-          a.button {
-              background: transparent url('{{ MEDIA_URL }}img/bg_button_a.gif') no-repeat scroll top right;
-              color: #444;
-              display: block;
-              float: left;
-              font: normal 12px arial, sans-serif;
-              height: 24px;
-              margin-right: 6px;
-              padding-right: 18px; /* sliding doors padding */
-              text-decoration: none;
-          }
-          a.button span {
-              background: transparent url('{{ MEDIA_URL }}img/bg_button_span.gif') no-repeat;
-              display: block;
-              line-height: 14px;
-              padding: 5px 0 5px 18px;
-          }
-          a.button:active {
-              background-position: bottom right;
-              color: #000;
-              outline: none; /* hide dotted outline in Firefox */
-          }
-          a.button:active span {
-              background-position: bottom left;
-              padding: 6px 0 4px 18px; /* push text down 1px */
-          }
-		</style>
-		<script type="text/javascript">
-            $(document).ready(function() {
-                var atts = { id: "myytplayer" };
-                var params = { allowScriptAccess: "always", menu: "true"};
+    <head>
+        <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+        {# <link rel="stylesheet" type="text/css" href="{{ MEDIA_URL }}css/buttons.css" media="screen" /> #}
+        <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.4.3/jquery.min.js"></script>
+        <script type="text/javascript" src="{{ MEDIA_URL }}js/jwplayer.js"></script>
+    </head>
+    <body>
+        <body id="jwplayer">
+            <div id="container">Loading the player ...</div>
+        </body>
+    </body>
+    <script type="text/javascript" charset="utf-8">
+        var player = jwplayer("container");
+        var new_items = [];
 
-                /* gets called once the player is loaded and ready */
-                function onYouTubePlayerReady (playerId) {
-                    ytplayer = document.getElementById(atts.id);
-                    ytplayer.addEventListener('onStateChange', 'onStateChangeListener');
+        function addPlaylistItem (new_item) { new_items.push(new_item); }
 
-                    playlist = new function () {
-                        this.i = 0;
-                        this.posts = [];
-                        this.load = function (data) {
-                            this.posts.push.apply(this.posts, data);
-                            // for (var i = data.length - 1; i >= 0; i--){
-                            //     this.posts.push(data[i]);
-                            // };
-                        };
-                        this.fw = function () { if (this.i < this.posts.length - 1) { this.i++ } else { this.i = 0 } };
-                        this.rw = function () { if (this.i > 0 ) { this.i-- } else { this.i = this.posts.length - 1} };
-                        this.id = function () {
-                            if (this.i > this.posts.length - 3) fetch_youtubes(false);
-                             FB.XFBML.parse(document.getElementById('comments'));
-                            // showWebSite(this.posts[this.i].permalink);
-                            return this.posts[this.i].youtube_id;
-                        };
-                        this.next = function () { this.fw(); ytplayer.loadVideoById(this.id()) };
-                        this.previous = function () { this.rw(); ytplayer.loadVideoById(this.id()) }
-                    };
+        function loadNewPlaylist () {
+            if (new_items.length > 0) {
+                new_playlist=player.getPlaylist().concat(new_items);
+                new_items = [];
+                player.load(new_playlist);
+            };
+        }
 
-                    function fetch_youtubes(cue) {
-                        $.getJSON('{% url facebook.views.youtube_increment %}', function(data) {
-                            playlist.load(data);
-                            if (cue == true) ytplayer.cueVideoById(playlist.id());
-                        });
-                    }
-                    fetch_youtubes(true);
-                }
-
-                function onStateChangeListener (newState) {
-                    switch(newState) {
-                        case 0:  // ended
-                            playlist.fw();
-                            ytplayer.loadVideoById(playlist.id());
-                            break;
-                        case 5:  // cued
-                            if (ytplayer && ytplayer.getDuration) {
-                                duration_el.val(ytplayer.getDuration());
-                            };
-                            break;
-                    };
-                }
-
-                swfobject.embedSWF("http://www.youtube.com/apiplayer?&enablejsapi=1&playerapiid=ytapiplayer",
-                                    "ytapiplayer", "600", "400", "8", null, null, params, atts);
+        function fetch_video_posts(load) {
+            jQuery.getJSON('{% url facebook.views.videos_increment %}', function (posts) {
+                for (var i = posts.length - 1; i >= 0; i--){
+                    var post = posts[i];
+                    addPlaylistItem({
+                        file: post.vid_src,
+                        image: post.img_src
+                    });
+                };
+                if (load) { loadNewPlaylist(); };
             });
-        </script>
-	</head>
-	<body>
-	    <div id="ytapiplayer">
-            You need Flash player 8+ and JavaScript enabled to view this video.
-        </div>
+        }
 
-        <div>
-            <a class='button' href="javascript:playlist.previous()"><span>Back</span></a>
-            <a class='button' href="javascript:ytplayer.playVideo()"><span>Play</span></a>
-            <a class='button' href="javascript:ytplayer.pauseVideo()"><span>Pause</span></a>
-            <a class='button' href="javascript:playlist.next()"><span>Next</span></a>
-        </div>
-        <div id="fb-root"></div>
-        <div id="comments">
-            <fb:comments xid="2409285_138709116177634" width="425"></fb:comments>
-        </div>
-	</body>
+        player.setup({
+                flashplayer: '{{ MEDIA_URL }}swf/player.swf',
+                height: 800, width: 600,
+                "playlist.position": "bottom",
+                "playlist.size": 400,
+        }).onComplete(function () {             //alert('onComplete');
+                this.playlistNext();
+        }).onReady(function () {                //alert('onReady');
+                fetch_video_posts(true);
+        }).onIdle(function (old_state) {        //alert('onIdle');
+                loadNewPlaylist();
+        }).onPlaylist(function (old_state) {    //alert('onPlaylist');
+                fetch_video_posts(false);
+        });
+       </script>
 </html>
