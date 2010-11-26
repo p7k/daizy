@@ -66,6 +66,7 @@ def videos_increment(request, limit=30):
         timestamp = request.session.get('facebook_timestamp', now_timestamp())
         fql = fql_query(timestamp, limit=limit)
         # import ipdb; ipdb.set_trace()
+        # TODO secure this call with some exception handling + timeout
         json_results = graph.fql(fql)
         if not json_results: break
         request.session['facebook_timestamp'] = json_results[-1]['created_time']

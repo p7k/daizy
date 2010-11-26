@@ -5,55 +5,96 @@
     lang="{% firstof LANGUAGE_CODE 'en' %}">
     <head>
         <meta http-equiv="content-type" content="text/html; charset=utf-8" />
-        {# <link rel="stylesheet" type="text/css" href="{{ MEDIA_URL }}css/buttons.css" media="screen" /> #}
         <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.4.3/jquery.min.js"></script>
         <script type="text/javascript" src="{{ MEDIA_URL }}js/jwplayer.js"></script>
     </head>
     <body>
-        <body id="jwplayer">
-            <div id="container">Loading the player ...</div>
+        <body>
+            <img id='avatar' src='http://graph.facebook.com/katsev/picture?type=square'/>
+            <div id='jwp_container'>Loading the player ...</div>
         </body>
     </body>
     <script type="text/javascript" charset="utf-8">
-        var player = jwplayer("container");
-        var new_items = [];
+        jQuery(function () {
+            var pending_reload = false;
 
-        function addPlaylistItem (new_item) { new_items.push(new_item); }
-
-        function loadNewPlaylist () {
-            if (new_items.length > 0) {
-                new_playlist=player.getPlaylist().concat(new_items);
-                new_items = [];
-                player.load(new_playlist);
-            };
-        }
-
-        function fetch_video_posts(load) {
-            jQuery.getJSON('{% url facebook.views.videos_increment %}', function (posts) {
-                for (var i = posts.length - 1; i >= 0; i--){
-                    var post = posts[i];
-                    addPlaylistItem({
+            function PlaylistHelper(player) {
+                this.new_items = [];
+                this.player = player;
+                this.addPlaylistItem = function (new_item) {
+                    return this.new_items.push(new_item);
+                };
+                this.addPlaylistItemFromPost = function (post) {
+                    return this.addPlaylistItem({
                         file: post.vid_src,
-                        image: post.img_src
+                        image: post.img_src,
+                        fb_post: post,              // monkey patch?!
                     });
                 };
-                if (load) { loadNewPlaylist(); };
-            });
-        }
+                this.reloadPlaylist = function () {
+                    pending_reload = false;
+                    if (this.new_items.length > 0) {
+                        var newPlaylist = this.player.getPlaylist().concat(this.new_items);
+                        this.player.load(newPlaylist);
+                        this.new_items = [];
+                        pending_reload = true;
+                    };
+                };
+            }
 
-        player.setup({
+            var player = jwplayer('jwp_container');
+            var playlist_helper = new PlaylistHelper(player);
+
+            function reloadPlaylist() {
+                    console.log('actually loaded');
+                    playlist_helper.reloadPlaylist();
+            }
+
+            function fetchVideoPosts(callback) {
+                jQuery.getJSON('{% url facebook.views.videos_increment %}', function (posts) {
+                    for (var i = posts.length - 1; i >= 0; i--) {
+                        playlist_helper.addPlaylistItemFromPost(posts[i]);
+                    };
+                    if (callback) callback();
+                });
+            }
+
+            function updatePage(post) {
+                $('#avatar').attr('src', 'http://graph.facebook.com/' + post.fb_post.source_id + '/picture?type=square');
+            }
+
+            var initial_load = true;
+
+            player.setup({
                 flashplayer: '{{ MEDIA_URL }}swf/player.swf',
-                height: 800, width: 600,
+                height: 800,
+                width: 700,
+                skin: '{{ MEDIA_URL }}skins/smooth.zip',
                 "playlist.position": "bottom",
                 "playlist.size": 400,
-        }).onComplete(function () {             //alert('onComplete');
+            }).onReady(function () {
+                fetchVideoPosts(reloadPlaylist);
+
+            }).onComplete(function () {
                 this.playlistNext();
-        }).onReady(function () {                //alert('onReady');
-                fetch_video_posts(true);
-        }).onIdle(function (old_state) {        //alert('onIdle');
-                loadNewPlaylist();
-        }).onPlaylist(function (old_state) {    //alert('onPlaylist');
-                fetch_video_posts(false);
+
+            }).onPlaylistItem(function (data) {
+                updatePage(this.getPlaylist()[data.index]);
+                var playlist_len = this.getPlaylist().length;
+                if (data.index > (playlist_len - 3)) {
+                    fetchVideoPosts();
+                };
+                pending_reload = false;
+                if (data.index == (playlist_len - 1)) {
+                    reloadPlaylist();
+                };
+
+            }).onPlaylist(function (data) {
+                this.play();
+
+            }).onIdle(function (data) {
+                if (pending_reload) this.play();
+            });
         });
-       </script>
+    </script>
 </html>

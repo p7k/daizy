@@ -9,43 +9,49 @@
     </head>
     <body id="jwplayer">
         <div id="container">Loading the player ...</div>
+        <button onclick="logcls();">clear</button>
+        <button onclick="logline();">line</button>
+        <hr/>
+        <div id='console'></div>
     </body>
     <script type="text/javascript">
-        var new_items = [];
-        function addPlaylistItem (new_item) { new_items.push(new_item); }
+        var con = document.getElementById('console');
+        function log (msg) { con.innerHTML += msg + '<br/>' }
+        function logline() { con.innerHTML += '<hr/>'; }
+        function logcls() { con.innerHTML = ''; }
 
         var player = jwplayer("container");
         player
             .setup({
                 flashplayer: '{{ MEDIA_URL }}swf/player.swf',
                 height: 300, width: 900,
+                playlist: [
+                    {file: 'http://www.youtube.com/v/rxGvzC399Q0'},
+                    {file: 'http://video.l3.fbcdn.net/cfs-l3-snc4/77315/402/907345106005_45457.mp4'},
+                    {file: 'http://www.youtube.com/v/B7_rPDwSKe8&autoplay=1'},
+                    {file: 'http://video.ak.fbcdn.net/cfs-ak-ash2/42237/11/10100192379626500_14648.mp4?h=7c00a34782268a43a78a7f58063fbabd&r=1960'}
+                ],
                 "playlist.position": "right",
                 "playlist.size": 360,
-            })
-            .onComplete(function () { //alert('onComplete');
-                this.playlistNext();
-            })
-            .onReady(function () { //alert('onReady');
-                this.load([
-                    {file: 'http://video.l3.fbcdn.net/cfs-l3-snc4/77315/402/907345106005_45457.mp4'},
-                ]);
-                setTimeout(function() { alert('adding 1st');
-                    addPlaylistItem({file: 'http://www.youtube.com/v/B7_rPDwSKe8&autoplay=1'});
-                }, 3000);
-                setTimeout(function() { alert('adding 2nd');
-                    addPlaylistItem({file: 'http://video.ak.fbcdn.net/cfs-ak-ash2/42237/11/10100192379626500_14648.mp4?h=7c00a34782268a43a78a7f58063fbabd&r=1960'});
-                }, 34000);
+            }).onReady(function () {
+                log('onReady');
                 this.play();
-            })
-            .onIdle(function (old_state) { //alert('onIdle');
-                if (new_items.length > 0) {
-                    new_playlist=this.getPlaylist().concat(new_items);
-                    new_items = [];
-                    this.load(new_playlist);
-                }
-            })
-            .onPlay(function () { alert('onPlay');
-                
+            }).onComplete(function () {
+                log('onComplete');
+                this.playlistNext();
+            }).onIdle(function (data) {
+                log('onIdle :: old state ' + data.oldstate);
+                this.play();
+                // this.load(this.getPlaylist().concat([{file: 'http://video.l3.fbcdn.net/cfs-l3-snc4/77315/402/907345106005_45457.mp4'}]));
+            }).onPlay(function (data) {
+                log('onPlay :: old state ' + data.oldstate);
+            }).onPlaylistItem(function (data) {
+                log('onPlaylistItem :: index ' + data.index);
+            }).onPlaylist(function (data) {
+                log('onPlaylist');
+            // }).onBufferChange(function (data) {
+            //     log('onBufferChange :: percent ' + data.percent);
             });
+
     </script>
 </html>
