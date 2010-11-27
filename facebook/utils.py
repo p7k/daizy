@@ -45,6 +45,7 @@ def skinny_video_post(post):
                     'post_id': post.get('post_id', ''),
                     'source_id': post.get('source_id', ''),
                     'permalink': post.get('permalink', ''),
-                    'vid_src': video.get('source_url', ''),
+                    'created_time': post.get('created_time', ''),
                     'img_src': media.get('src', ''),
+                    'vid_src': video.get('source_url', ''),
                 }
