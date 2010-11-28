@@ -33,10 +33,7 @@ def canvas(request):
 
     # request authorization / extended permissions
     if not oauth_token:
-        return render_to_response('canvas_authorize.html', {
-            'FACEBOOK_APP_NAME': settings.FACEBOOK_APP_NAME,
-            'FACEBOOK_APP_ID': settings.FACEBOOK_APP_ID,
-        }, context_instance=RequestContext(request))
+        return render_to_response('canvas_authorize.html', context_instance=RequestContext(request))
 
     # authentication / start session
     uid = data.get('user_id')

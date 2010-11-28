@@ -60,6 +60,7 @@ MIDDLEWARE_CLASSES = MIDDLEWARE_CLASSES + (
 TEMPLATE_CONTEXT_PROCESSORS = TEMPLATE_CONTEXT_PROCESSORS + (
     'django.core.context_processors.request',
     'facebook.context_processors.facebook_info',
+    'facebook.context_processors.facebook_app_info',
 )
 
 SOCIALREGISTRATION_GENERATE_USERNAME = True

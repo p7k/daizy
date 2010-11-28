@@ -8,6 +8,7 @@
         <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.4.3/jquery.min.js"></script>
         <script type="text/javascript" src="{{ MEDIA_URL }}js/jwplayer.js"></script>
         <script type="text/javascript" src="{{ MEDIA_URL }}js/prettydate.js"></script>
+        <script src="http://connect.facebook.net/en_US/all.js"></script>
         <script type="text/javascript" charset="utf-8">
             function PlaylistHelper(player) {
                 this.new_items = [];
@@ -37,15 +38,16 @@
             function updatePage(post) {
                 $('#avatar').attr('src', 'http://graph.facebook.com/' + post.source_id + '/picture?type=square');
                 $('#created_time').html(prettyDate(post.created_time));
+                FB.Data.query('select name, uid from user where uid={0}', post.source_id)
+                    .wait(function(rows) {
+                        $('#poster_name').html(rows[0].name);
+                    });
+                
             }
 
             $(function () {
                 var player = jwplayer('jwp_container');
                 var playlist_helper = new PlaylistHelper(player);
-
-                function reloadPlaylist() {
-                    playlist_helper.reloadPlaylist();
-                }
 
                 function fetchVideoPosts(callback) {
                     $.getJSON('{% url facebook.views.videos_increment %}', function (posts) {
@@ -61,15 +63,18 @@
 
                 player.setup({
                     flashplayer: '{{ MEDIA_URL }}swf/player.swf',
-                    height: 800,
-                    width: 700,
+                    height: 400,
+                    width: 720,
                     skin: '{{ MEDIA_URL }}skins/smooth.zip',
-                    "playlist.position": "bottom",
-                    "playlist.size": 400,
+                    controlbar: 'bottom',
+                    // "playlist.position": "bottom",
+                    // "playlist.size": 400,
                 }).onReady(function () {
-                    fetchVideoPosts(reloadPlaylist);
+                    fetchVideoPosts(function () { 
+                        playlist_helper.reloadPlaylist() 
+                    });
                 }).onComplete(function () {
-                    this.playlistNext();
+                    if (!next_idle_reload) this.playlistNext();
                 }).onPlaylistItem(function (data) {
                     updatePage(this.getPlaylist()[data.index].fb_post);
                     var pl_length = this.getPlaylist().length;
@@ -78,7 +83,9 @@
                 }).onPlaylist(function (data) {
                     this.playlistItem(next_index);
                 }).onIdle(function (data) {
-                    if (next_idle_reload && playlist_helper.itemsAwaiting() && this.getPosition() == 0) {
+                    var in_middle = this.getPosition() > 0
+                        && (this.getDuration() - this.getPosition()) > 1;
+                    if (next_idle_reload && playlist_helper.itemsAwaiting() && !in_middle) {
                         this.stop();
                         next_index = this.getPlaylist().length;
                         playlist_helper.reloadPlaylist();
@@ -89,8 +96,20 @@
     </head>
     <body>
         <body>
-            <img id='avatar' src='http://graph.facebook.com/katsev/picture?type=square'/>
-            <div id="created_time"></div>
+            <div id="fb-root"></div>
+            <script type="text/javascript">
+                FB.init({
+                    appId  : '{{ FACEBOOK_APP_ID }}',
+                    status : true, // check login status
+                    cookie : true, // enable cookies to allow the server to access the session
+                    xfbml  : true  // parse XFBML
+                });
+            </script>
+            <div id='post_header' style='height:60px'>
+                <img id='avatar'/>
+                <span id='poster_name'></span>
+                <span id='created_time' style='padding-left:20px'></span>
+            </div>
             <div id='jwp_container'>Loading the player ...</div>
         </body>
     </body>
