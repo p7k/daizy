@@ -28,21 +28,21 @@
                         var newPlaylist = this.player.getPlaylist().concat(this.new_items);
                         this.player.load(newPlaylist);
                         this.new_items = [];
-                    };
+                    }
                 };
                 this.itemsAwaiting = function () {
                     return this.new_items.length > 0;
                 };
-            };
+            }
 
             function updatePage(post) {
-                $('#avatar').attr('src', 'http://graph.facebook.com/' + post.source_id + '/picture?type=square');
-                $('#created_time').html(prettyDate(post.created_time));
                 FB.Data.query('select name, uid from user where uid={0}', post.source_id)
                     .wait(function(rows) {
                         $('#poster_name').html(rows[0].name);
+                        $('#avatar').attr('src', 'http://graph.facebook.com/' + post.source_id + '/picture?type=square');
+                        $('#created_time').html(prettyDate(post.created_time));
+                        $('#perma').html('<a href="' + post.permalink + '">link</a>');
                     });
-                
             }
 
             $(function () {
@@ -60,15 +60,16 @@
 
                 var next_idle_reload = false;
                 var next_index = 0;
+                var playlist_reloading = false;
 
                 player.setup({
                     flashplayer: '{{ MEDIA_URL }}swf/player.swf',
-                    height: 400,
+                    height: 600,
                     width: 720,
                     skin: '{{ MEDIA_URL }}skins/smooth.zip',
                     controlbar: 'bottom',
-                    // "playlist.position": "bottom",
-                    // "playlist.size": 400,
+                    "playlist.position": "bottom",
+                    "playlist.size": 400,
                 }).onReady(function () {
                     fetchVideoPosts(function () { 
                         playlist_helper.reloadPlaylist() 
@@ -76,39 +77,43 @@
                 }).onComplete(function () {
                     if (!next_idle_reload) this.playlistNext();
                 }).onPlaylistItem(function (data) {
+                    if (next_idle_reload && playlist_reloading) this.stop();
                     updatePage(this.getPlaylist()[data.index].fb_post);
                     var pl_length = this.getPlaylist().length;
                     next_idle_reload = data.index == (pl_length - 1);
-                    if (data.index > (pl_length - 3)) fetchVideoPosts();
+                    if (data.index > (pl_length - 3)) {
+                        fetchVideoPosts();
+                    }
                 }).onPlaylist(function (data) {
+                    playlist_reloading = false;
                     this.playlistItem(next_index);
                 }).onIdle(function (data) {
                     var in_middle = this.getPosition() > 0
                         && (this.getDuration() - this.getPosition()) > 1;
                     if (next_idle_reload && playlist_helper.itemsAwaiting() && !in_middle) {
-                        this.stop();
                         next_index = this.getPlaylist().length;
+                        playlist_reloading = true;
                         playlist_helper.reloadPlaylist();
                     }
                 });
             });
         </script>
+        <style type="text/css" media="screen">
+            #blue {
+                font-family: 'lucida grande', tahoma, verdana, arial, sans-serif;
+                font-size: 13px;
+                font-weight: bold;
+            }
+        </style>
     </head>
     <body>
         <body>
             <div id="fb-root"></div>
-            <script type="text/javascript">
-                FB.init({
-                    appId  : '{{ FACEBOOK_APP_ID }}',
-                    status : true, // check login status
-                    cookie : true, // enable cookies to allow the server to access the session
-                    xfbml  : true  // parse XFBML
-                });
-            </script>
             <div id='post_header' style='height:60px'>
                 <img id='avatar'/>
-                <span id='poster_name'></span>
+                <span id='poster_name' class='blue'></span>
                 <span id='created_time' style='padding-left:20px'></span>
+                <span id='perma' style='padding-left:20px'></span>
             </div>
             <div id='jwp_container'>Loading the player ...</div>
         </body>
