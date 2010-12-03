@@ -58,7 +58,7 @@ def canvas(request):
 def videos_increment(request, limit=30):
     graph = fb_sdk.GraphAPI(request.session['oauth_token'])
     sources = []
-    # always return at least two to avoid 
+    # always return at least two to avoid
     while len(sources) < 2:
         timestamp = request.session.get('facebook_timestamp', now_timestamp())
         fql = fql_query(timestamp, limit=limit)

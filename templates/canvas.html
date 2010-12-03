@@ -58,9 +58,9 @@
                     });
                 }
 
-                var next_idle_reload = false;
                 var next_index = 0;
                 var playlist_reloading = false;
+                var last_item = false;
 
                 player.setup({
                     flashplayer: '{{ MEDIA_URL }}swf/player.swf',
@@ -75,24 +75,26 @@
                         playlist_helper.reloadPlaylist() 
                     });
                 }).onComplete(function () {
-                    if (!next_idle_reload) this.playlistNext();
+                    if (!playlist_reloading) this.playlistNext();
                 }).onPlaylistItem(function (data) {
-                    if (next_idle_reload && playlist_reloading) this.stop();
-                    updatePage(this.getPlaylist()[data.index].fb_post);
                     var pl_length = this.getPlaylist().length;
-                    next_idle_reload = data.index == (pl_length - 1);
-                    if (data.index > (pl_length - 3)) {
-                        fetchVideoPosts();
+                    last_item = data.index == (pl_length - 1);
+                    if (playlist_reloading) {
+                        this.stop();
+                    } else {
+                        updatePage(this.getPlaylist()[data.index].fb_post);
+                        if (data.index > (pl_length - 3)) fetchVideoPosts();
                     }
                 }).onPlaylist(function (data) {
                     playlist_reloading = false;
                     this.playlistItem(next_index);
                 }).onIdle(function (data) {
-                    var in_middle = this.getPosition() > 0
-                        && (this.getDuration() - this.getPosition()) > 1;
-                    if (next_idle_reload && playlist_helper.itemsAwaiting() && !in_middle) {
-                        next_index = this.getPlaylist().length;
+                    var in_middle = (this.getPosition() > 0)
+                        && ((this.getDuration() - this.getPosition()) > 1);
+                    if (last_item && !playlist_reloading
+                            && playlist_helper.itemsAwaiting() && !in_middle) {
                         playlist_reloading = true;
+                        next_index = this.getPlaylist().length;
                         playlist_helper.reloadPlaylist();
                     }
                 });
