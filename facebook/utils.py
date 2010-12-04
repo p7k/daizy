@@ -34,6 +34,7 @@ def fql_query(timestamp, source_id='me()', limit=50):
         'limit': int(limit)
     }
 
+_accepted_sources = ('youtube.com', 'fbcdn.net')
 def skinny_video_post(post):
     attachment = post['attachment']
     media_list = attachment.get('media')
@@ -41,11 +42,13 @@ def skinny_video_post(post):
         for media in media_list:
             video = media.get('video')
             if video:
-                return {
-                    'post_id': post.get('post_id', ''),
-                    'source_id': post.get('source_id', ''),
-                    'permalink': post.get('permalink', ''),
-                    'created_time': post.get('created_time', ''),
-                    'img_src': media.get('src', ''),
-                    'vid_src': video.get('source_url', ''),
-                }
+                source_url = video.get('source_url')
+                if any((_ in source_url for _ in _accepted_sources)):
+                    return {
+                        'post_id': post.get('post_id', ''),
+                        'source_id': post.get('source_id', ''),
+                        'permalink': post.get('permalink', ''),
+                        'created_time': post.get('created_time', ''),
+                        'img_src': media.get('src', ''),
+                        'vid_src': source_url,
+                    }

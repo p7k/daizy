@@ -7,34 +7,10 @@
         <meta http-equiv="content-type" content="text/html; charset=utf-8" />
         <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.4.3/jquery.min.js"></script>
         <script type="text/javascript" src="{{ MEDIA_URL }}js/jwplayer.js"></script>
+        <script type="text/javascript" src="{{ MEDIA_URL }}js/jwplayer-ext.js"></script>
         <script type="text/javascript" src="{{ MEDIA_URL }}js/prettydate.js"></script>
         <script src="http://connect.facebook.net/en_US/all.js"></script>
         <script type="text/javascript" charset="utf-8">
-            function PlaylistHelper(player) {
-                this.new_items = [];
-                this.player = player;
-                this.addPlaylistItem = function (new_item) {
-                    return this.new_items.push(new_item);
-                };
-                this.addPlaylistItemFromPost = function (post) {
-                    return this.addPlaylistItem({
-                        file: post.vid_src,
-                        image: post.img_src,
-                        fb_post: post,              // monkey patch?!
-                    });
-                };
-                this.reloadPlaylist = function () {
-                    if (this.new_items.length > 0) {
-                        var newPlaylist = this.player.getPlaylist().concat(this.new_items);
-                        this.player.load(newPlaylist);
-                        this.new_items = [];
-                    }
-                };
-                this.itemsAwaiting = function () {
-                    return this.new_items.length > 0;
-                };
-            }
-
             function updatePage(post) {
                 FB.Data.query('select name, uid from user where uid={0}', post.source_id)
                     .wait(function(rows) {
@@ -46,58 +22,16 @@
             }
 
             $(function () {
-                var player = jwplayer('jwp_container');
-                var playlist_helper = new PlaylistHelper(player);
-
-                function fetchVideoPosts(callback) {
-                    $.getJSON('{% url facebook.views.videos_increment %}', function (posts) {
-                        $.each(posts, function (i, post) {
-                            playlist_helper.addPlaylistItemFromPost(post);
-                        });
-                        if (callback) callback();
-                    });
-                }
-
-                var next_index = 0;
-                var playlist_reloading = false;
-                var last_item = false;
-
-                player.setup({
+                var jwp = jwplayer('jwp_container').setup({
                     flashplayer: '{{ MEDIA_URL }}swf/player.swf',
-                    height: 600,
+                    height: 400,
                     width: 720,
                     skin: '{{ MEDIA_URL }}skins/smooth.zip',
                     controlbar: 'bottom',
-                    "playlist.position": "bottom",
-                    "playlist.size": 400,
-                }).onReady(function () {
-                    fetchVideoPosts(function () { 
-                        playlist_helper.reloadPlaylist() 
-                    });
-                }).onComplete(function () {
-                    if (!playlist_reloading) this.playlistNext();
-                }).onPlaylistItem(function (data) {
-                    var pl_length = this.getPlaylist().length;
-                    last_item = data.index == (pl_length - 1);
-                    if (playlist_reloading) {
-                        this.stop();
-                    } else {
-                        updatePage(this.getPlaylist()[data.index].fb_post);
-                        if (data.index > (pl_length - 3)) fetchVideoPosts();
-                    }
-                }).onPlaylist(function (data) {
-                    playlist_reloading = false;
-                    this.playlistItem(next_index);
-                }).onIdle(function (data) {
-                    var in_middle = (this.getPosition() > 0)
-                        && ((this.getDuration() - this.getPosition()) > 1);
-                    if (last_item && !playlist_reloading
-                            && playlist_helper.itemsAwaiting() && !in_middle) {
-                        playlist_reloading = true;
-                        next_index = this.getPlaylist().length;
-                        playlist_helper.reloadPlaylist();
-                    }
+                    // "playlist.position": "bottom",
+                    // "playlist.size": 400,
                 });
+                wirePlayer(jwp, '{% url facebook.views.videos_increment %}', updatePage);
             });
         </script>
         <style type="text/css" media="screen">
