@@ -28,7 +28,7 @@ def fb_account_setup(request, user, facebook_profile):
 def fql_query(timestamp, source_id='me()', limit=50):
     # TODO look into filtering (WHERE filter_key="nf")
     return 'SELECT %(stream_fields)s FROM stream WHERE source_id IN (SELECT target_id FROM connection WHERE source_id = %(source_id)s) AND is_hidden = 0 AND created_time < %(timestamp)s LIMIT %(limit)s' % {
-        'stream_fields': 'post_id, source_id, attachment.media, created_time, permalink',
+        'stream_fields': 'post_id, source_id, message, attachment.media, created_time, permalink',
         'source_id': source_id,
         'timestamp': int(timestamp),
         'limit': int(limit)
@@ -46,6 +46,7 @@ def skinny_video_post(post):
                 if any((_ in source_url for _ in _accepted_sources)):
                     return {
                         'post_id': post.get('post_id', ''),
+                        'message': post.get('message', ''),
                         'source_id': post.get('source_id', ''),
                         'permalink': post.get('permalink', ''),
                         'created_time': post.get('created_time', ''),

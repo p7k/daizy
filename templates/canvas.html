@@ -5,31 +5,50 @@
     lang="{% firstof LANGUAGE_CODE 'en' %}">
     <head>
         <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+        <link rel="stylesheet" href="http://static.ak.fbcdn.net/rsrc.php/z7/r/CswSXF8QtN4.css" type="text/css" media="screen">
+        <link rel="stylesheet" href="http://static.ak.fbcdn.net/rsrc.php/zR/r/opgtoCoXXUv.css" type="text/css" media="screen">
+        <link rel="stylesheet" href="http://static.ak.fbcdn.net/rsrc.php/zs/r/jijh_lRUXS8.css" type="text/css" media="screen">
+        <link rel="stylesheet" href="http://static.ak.fbcdn.net/rsrc.php/zL/r/jkC9bHtC_Er.css" type="text/css" media="screen">
         <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.4.3/jquery.min.js"></script>
         <script type="text/javascript" src="{{ MEDIA_URL }}js/jwplayer.js"></script>
         <script type="text/javascript" src="{{ MEDIA_URL }}js/jwplayer-ext.js"></script>
         <script type="text/javascript" src="{{ MEDIA_URL }}js/prettydate.js"></script>
         <script src="http://connect.facebook.net/en_US/all.js"></script>
         <script type="text/javascript" charset="utf-8">
-            function updatePage(post) {
-                FB.Data.query('select name, uid from user where uid={0}', post.source_id)
-                    .wait(function(rows) {
-                        $('#avatar')
-                            .attr('src', 'http://graph.facebook.com/' + post.source_id + '/picture?type=square');
-                        $('#poster_name')
-                            .attr('href', 'http://www.facebook.com/profile.php?id=' + post.source_id)
-                            .html(rows[0].name);
-                        $('#created_time')
-                            .attr('href', post.permalink)
-                            .html(prettyDate(post.created_time));
-                    });
-            }
-
             $(function () {
+                var s = {
+                    avatar: $('#avatar'),
+                    avatar_link: $('#avatar_link'),
+                    poster_name: $('#poster_name'),
+                    message: $('#message'),
+                    permalink: $('#permalink'),
+                    created_time: $('#created_time'),
+                    media_icon: $('i.UIImageBlock_Image.UIImageBlock_ICON_Image.img.spritemap_aanaup.sx_549a6d'),
+                };
+                s.media_icon.hide();
+
+                function updatePage(post) {
+                    FB.Data.query('select name, uid from user where uid={0}', post.source_id)
+                        .wait(function(rows) {
+                            var poster_ref = 'http://www.facebook.com/profile.php?id=' + post.source_id;
+                            var created_time = new Date(post.created_time * 1000);
+
+                            s.avatar.attr('src', 'http://graph.facebook.com/' + post.source_id + '/picture?type=square');
+                            s.avatar_link.attr('href', poster_ref);
+                            s.poster_name.attr('href', poster_ref).html(rows[0].name);
+                            s.message.html(post.message);
+                            s.permalink.attr('href', post.permalink);
+                            s.created_time
+                                .attr('title', created_time.toLocaleDateString() + ' at ' + created_time.toLocaleTimeString())
+                                .html(prettyDate(post.created_time));
+                            s.media_icon.show();
+                        });
+                }
+
                 var jwp = jwplayer('jwp_container').setup({
                     flashplayer: '{{ MEDIA_URL }}swf/player.swf',
                     height: 400,
-                    width: 720,
+                    width: 740,
                     skin: '{{ MEDIA_URL }}skins/smooth.zip',
                     controlbar: 'bottom',
                     // "playlist.position": "bottom",
@@ -38,31 +57,41 @@
                 wirePlayer(jwp, '{% url facebook.views.videos_increment %}', updatePage);
             });
         </script>
-        <style type="text/css" media="screen">
-            .blue {
-                font-family: 'lucida grande', tahoma, verdana, arial, sans-serif;
-                font-size: 13px;
-                font-weight: bold;
-            }
-            .UIImageBlock_Image .img,img.UIImageBlock_Image,i.UIImageBlock_Image{display:block}
-            .UIImageBlock_Image{float:left;margin-right:5px}
-            .UIImageBlock_ICON_Image{margin-right:5px}
-            .spritemap_aanaup{background-image:url(http://static.ak.fbcdn.net/rsrc.php/zS/r/SoE4jDlkVx3.png);background-repeat:no-repeat;display:inline-block;height:16px;width:16px}
-            .sx_549a6d{height:17px;background-position:-21px -162px}
-        </style>
     </head>
     <body>
-        <body>
-            <div id="fb-root"></div>
-            <div id='post_header' style='height:60px'>
-                <img id='avatar'/>
-                <a id='poster_name' class='blue'></a>
+        <div id="fb-root"></div>
+        <div class="permalink_stream">
+            <ul class="uiList uiStream">
+                <li class="pvm uiUnifiedStory uiStreamStory uiListItem uiListLight uiListVerticalItemBorder">
+                    <div class="UIImageBlock clearfix storyContent">
+                        <a id='avatar_link' class="profilePicLink UIImageBlock_Image UIImageBlock_MED_Image" tabindex="-1">
+                            <img id='avatar' src='{{ MEDIA_URL}}img/daizy_avatar.gif' class="uiProfilePhoto profilePic uiProfilePhotoLarge img" alt="">
+                        </a>
+                        <div class="UIImageBlock_Content UIImageBlock_MED_Content">
+                            <h6 class="uiStreamMessage">
+                                <div class="actorName actorDescription">
+                                    <a id='poster_name'></a>
+                                </div>
+                                <span id='message' class="messageBody"></span>
+                            </h6>
+                        </div>
+                    </div>
+                </li>
+            </ul>
+        </div>
+        <div id='jwp_container'>Loading the player ...</div>
+        <div class="UIImageBlock clearfix">
+            <i class="UIImageBlock_Image UIImageBlock_ICON_Image img spritemap_aanaup sx_549a6d"></i>
+            <div class="UIImageBlock_Content UIImageBlock_ICON_Content">
+                <span class="uiStreamSource">
+                    <a id='permalink'><abbr id='created_time' class="timestamp"></abbr></a>
+                </span>
+                <!-- <span class="UIActionLinks UIActionLinks_bottom"> · 
+                    <button class="like_link stat_elem as_link" title="Like this item" type="submit" name="like" onclick="fc_click(this, false); return true;">
+                        <span class="default_message">Like</span>
+                        <span class="saving_message">Unlike</span>
+                    </button> · <label class="comment_link" onclick="return fc_click(this);" title="Leave a comment">Comment</label> · <a title="Send this to friends or post it on your profile." href="/ajax/share_dialog.php?s=99&amp;appid=2309869772&amp;p[]=615865238&amp;p[]=177873848905415&amp;action_link=share" rel="dialog">Share</a></span> -->
             </div>
-            <div id='jwp_container'>Loading the player ...</div>
-            <div>
-                <i class="UIImageBlock_Image UIImageBlock_ICON_Image img spritemap_aanaup sx_549a6d"></i>
-                <a id='created_time' style="font-family:'lucida grande',tahoma,verdana,arial,sans-serif;font-size:13px;"></a>
-            </div>
-        </body>
+        </div>
     </body>
 </html>

@@ -13,7 +13,6 @@ from socialregistration.models import FacebookProfile
 import socialregistration.facebook as fb_sdk
 from utils import fb_account_setup, now_timestamp, fql_query, skinny_video_post
 
-
 def canvas(request):
     """services facebook canvas"""
     signed_request = request.GET.get('signed_request')
