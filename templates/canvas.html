@@ -14,10 +14,14 @@
             function updatePage(post) {
                 FB.Data.query('select name, uid from user where uid={0}', post.source_id)
                     .wait(function(rows) {
-                        $('#poster_name').html(rows[0].name);
-                        $('#avatar').attr('src', 'http://graph.facebook.com/' + post.source_id + '/picture?type=square');
-                        $('#created_time').html(prettyDate(post.created_time));
-                        $('#perma').html('<a href="' + post.permalink + '">link</a>');
+                        $('#avatar')
+                            .attr('src', 'http://graph.facebook.com/' + post.source_id + '/picture?type=square');
+                        $('#poster_name')
+                            .attr('href', 'http://www.facebook.com/profile.php?id=' + post.source_id)
+                            .html(rows[0].name);
+                        $('#created_time')
+                            .attr('href', post.permalink)
+                            .html(prettyDate(post.created_time));
                     });
             }
 
@@ -35,11 +39,16 @@
             });
         </script>
         <style type="text/css" media="screen">
-            #blue {
+            .blue {
                 font-family: 'lucida grande', tahoma, verdana, arial, sans-serif;
                 font-size: 13px;
                 font-weight: bold;
             }
+            .UIImageBlock_Image .img,img.UIImageBlock_Image,i.UIImageBlock_Image{display:block}
+            .UIImageBlock_Image{float:left;margin-right:5px}
+            .UIImageBlock_ICON_Image{margin-right:5px}
+            .spritemap_aanaup{background-image:url(http://static.ak.fbcdn.net/rsrc.php/zS/r/SoE4jDlkVx3.png);background-repeat:no-repeat;display:inline-block;height:16px;width:16px}
+            .sx_549a6d{height:17px;background-position:-21px -162px}
         </style>
     </head>
     <body>
@@ -47,11 +56,13 @@
             <div id="fb-root"></div>
             <div id='post_header' style='height:60px'>
                 <img id='avatar'/>
-                <span id='poster_name' class='blue'></span>
-                <span id='created_time' style='padding-left:20px'></span>
-                <span id='perma' style='padding-left:20px'></span>
+                <a id='poster_name' class='blue'></a>
             </div>
             <div id='jwp_container'>Loading the player ...</div>
+            <div>
+                <i class="UIImageBlock_Image UIImageBlock_ICON_Image img spritemap_aanaup sx_549a6d"></i>
+                <a id='created_time' style="font-family:'lucida grande',tahoma,verdana,arial,sans-serif;font-size:13px;"></a>
+            </div>
         </body>
     </body>
 </html>
