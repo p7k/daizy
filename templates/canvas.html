@@ -27,22 +27,27 @@
                 };
                 s.media_icon.hide();
 
-                function updatePage(post) {
-                    FB.Data.query('select name, uid from user where uid={0}', post.source_id)
-                        .wait(function(rows) {
-                            var poster_ref = 'http://www.facebook.com/profile.php?id=' + post.source_id;
-                            var created_time = new Date(post.created_time * 1000);
+                function name_fql(t, f, id) {
+                    return FB.Data.query('select name from {0} where {1}={2}', t, f, id);
+                }
 
-                            s.avatar.attr('src', 'http://graph.facebook.com/' + post.source_id + '/picture?type=square');
-                            s.avatar_link.attr('href', poster_ref);
-                            s.poster_name.attr('href', poster_ref).html(rows[0].name);
-                            s.message.html(post.message);
-                            s.permalink.attr('href', post.permalink);
-                            s.created_time
-                                .attr('title', created_time.toLocaleDateString() + ' at ' + created_time.toLocaleTimeString())
-                                .html(prettyDate(post.created_time));
-                            s.media_icon.show();
-                        });
+                function updatePage(post) {
+                    var source_id = post.source_id;
+                    var user = name_fql('user', 'uid', source_id);
+                    var page = name_fql('page', 'page_id', source_id);
+
+                    FB.Data.waitOn([user, page], function () {
+                        var name = ((user.value.length > 0) ? user.value : page.value)[0].name;
+                        var poster_ref = 'http://www.facebook.com/profile.php?id=' + post.source_id;
+                        var created_time = new Date(post.created_time * 1000);
+                        s.avatar.attr('src', 'http://graph.facebook.com/' + post.source_id + '/picture?type=square');
+                        s.avatar_link.attr('href', poster_ref);
+                        s.poster_name.attr('href', poster_ref).html(name);
+                        s.message.html(post.message);
+                        s.permalink.attr('href', post.permalink);
+                        s.created_time.attr('title', created_time.toLocaleDateString() + ' at ' + created_time.toLocaleTimeString()).html(prettyDate(post.created_time));
+                        s.media_icon.show();
+                    });
                 }
 
                 var jwp = jwplayer('jwp_container').setup({
