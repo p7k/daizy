@@ -25,5 +25,4 @@ urlpatterns = patterns('',
 
     # testing only
     (r'^jw/$', 'django.views.generic.simple.direct_to_template', {'template': 'jwplayer.html'}),
-
 )
