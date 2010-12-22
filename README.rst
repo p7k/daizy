@@ -57,13 +57,12 @@ Has some of it's own dependencies:
 
 All of these are hard copied.
 
-TODO:
-
-- fix unversioned ``socialregistration/facebook.py`` which extends 
-facebook_sdk.py that is actually symlinked from the real `Facebook SDK`_.
-
 Facebook SDK
 ------------
 Python facebook_sdk_ for Facebook's Graph API.
+
+The SDK module is symlinked into the ``facebook`` app.
+``__init__.py`` imports * from SDK + some extensions.
+A little hacky.
 
 .. _facebook_sdk: http://github.com/facebook/python-sdk
