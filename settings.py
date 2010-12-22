@@ -27,6 +27,9 @@ TEST_RUNNER = 'djangotoolbox.test.CapturingTestSuiteRunner'
 ADMIN_MEDIA_PREFIX = '/media/admin/'
 TEMPLATE_DIRS = (os.path.join(os.path.dirname(__file__), 'templates'),)
 
+STATICFILES_DIRS = ('/static',)
+MEDIA_URL = '/files/'
+
 ROOT_URLCONF = 'urls'
 
 # Activate django-dbindexer if available

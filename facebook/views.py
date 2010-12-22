@@ -10,7 +10,7 @@ from django.conf import settings
 
 from djangotoolbox.http import JSONResponse
 from socialregistration.models import FacebookProfile
-import socialregistration.facebook as fb_sdk
+import facebook as fb_sdk
 from utils import fb_account_setup, now_timestamp, fql_query, skinny_video_post
 
 def canvas(request):
